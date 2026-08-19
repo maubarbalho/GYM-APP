@@ -49,9 +49,11 @@
     }
 
     .header {
-      position: sticky;
+      position: fixed;
       top: 0;
-      z-index: 50;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
       background: rgba(10, 14, 23, 0.92);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
@@ -1731,39 +1733,32 @@
     // ===================== HEADER AUTO-HIDE ON SCROLL =====================
     (function () {
   const header = document.querySelector('.header');
-  if (!header) return;                          // ← ADICIONE esta linha
+  if (!header) return;
 
-  let lastY = window.scrollY || 0;
   let ticking = false;
-  const threshold = 8;                          // ← ADICIONE esta linha
+  const threshold = 10; // quantos pixels precisa rolar para esconder
+
+  const updateHeader = () => {
+    const currentY = window.scrollY || document.documentElement.scrollTop || 0;
+
+    if (currentY > threshold) {
+      header.classList.add('header-hidden');
+    } else {
+      header.classList.remove('header-hidden');
+    }
+
+    ticking = false;
+  };
 
   window.addEventListener('scroll', () => {
-    if (ticking) return;
-    ticking = true;
-
-    requestAnimationFrame(() => {
-      const currentY = window.scrollY || document.documentElement.scrollTop || 0;
-      const delta = currentY - lastY;
-
-      // Só reage se o movimento for maior que 8px (evita tremor)
-      if (Math.abs(delta) < threshold) {
-        ticking = false;
-        return;
-      }
-
-      const scrolledDown = delta > 0;
-      const pastThreshold = currentY > 60;
-
-      if (scrolledDown && pastThreshold) {
-        header.classList.add('header-hidden');
-      } else {
-        header.classList.remove('header-hidden');
-      }
-
-      lastY = currentY <= 0 ? 0 : currentY;
-      ticking = false;
-    });
+    if (!ticking) {
+      window.requestAnimationFrame(updateHeader);
+      ticking = true;
+    }
   }, { passive: true });
+
+  // Garante o estado correto ao carregar a página
+  updateHeader();
 })();
   </script>
 </body>
