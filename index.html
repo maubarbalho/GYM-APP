@@ -1730,28 +1730,41 @@
 
     // ===================== HEADER AUTO-HIDE ON SCROLL =====================
     (function () {
-      const header = document.querySelector('.header');
-      let lastY = window.scrollY;
-      let ticking = false;
+  const header = document.querySelector('.header');
+  if (!header) return;                          // ← ADICIONE esta linha
 
-      window.addEventListener('scroll', () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-          const currentY = window.scrollY;
-          const scrolledDown = currentY > lastY;
-          const pastThreshold = currentY > 56;
+  let lastY = window.scrollY || 0;
+  let ticking = false;
+  const threshold = 8;                          // ← ADICIONE esta linha
 
-          if (scrolledDown && pastThreshold) {
-            header.classList.add('header-hidden');
-          } else {
-            header.classList.remove('header-hidden');
-          }
-          lastY = currentY <= 0 ? 0 : currentY;
-          ticking = false;
-        });
-      }, { passive: true });
-    })();
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+
+    requestAnimationFrame(() => {
+      const currentY = window.scrollY || document.documentElement.scrollTop || 0;
+      const delta = currentY - lastY;
+
+      // Só reage se o movimento for maior que 8px (evita tremor)
+      if (Math.abs(delta) < threshold) {
+        ticking = false;
+        return;
+      }
+
+      const scrolledDown = delta > 0;
+      const pastThreshold = currentY > 60;
+
+      if (scrolledDown && pastThreshold) {
+        header.classList.add('header-hidden');
+      } else {
+        header.classList.remove('header-hidden');
+      }
+
+      lastY = currentY <= 0 ? 0 : currentY;
+      ticking = false;
+    });
+  }, { passive: true });
+})();
   </script>
 </body>
 </html>
