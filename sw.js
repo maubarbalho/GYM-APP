@@ -1,4 +1,4 @@
-const CACHE_NAME = 'treino-abcd-v2';
+const CACHE_NAME = 'marsb-gym-v3';
 const APP_SHELL = [
   './',
   './index.html',
@@ -15,7 +15,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate: clean up old caches
+// Activate: clean up any old caches from previous versions
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -27,10 +27,32 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: cache-first, falling back to network, then updating the cache.
-// Falls back to the cached index.html for navigation requests when offline.
+// Fetch strategy:
+// - Navigation requests (loading the app / index.html) and manifest.json: NETWORK-FIRST.
+//   Always try to get the freshest version when online; fall back to cache only when offline.
+//   This is what makes the app show updates immediately instead of lagging one visit behind.
+// - Everything else (icons, other static assets): CACHE-FIRST, since they rarely change,
+//   updating the cache silently in the background for next time.
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  const isNavigation = event.request.mode === 'navigate';
+  const isManifest = event.request.url.endsWith('manifest.json');
+
+  if (isNavigation || isManifest) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match('./index.html')))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
@@ -42,11 +64,7 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => {
-          if (event.request.mode === 'navigate') {
-            return caches.match('./index.html');
-          }
-        });
+        .catch(() => cached);
 
       return cached || networkFetch;
     })
