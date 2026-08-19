@@ -1732,24 +1732,38 @@
 
     // ===================== HEADER AUTO-HIDE ON SCROLL =====================
     (function () {
-  const header = document.querySelector('.header');
-  if (!header) return;
-
+  const THRESHOLD = 10;
   let ticking = false;
-  const threshold = 10; // quantos pixels precisa rolar para esconder
 
-  const updateHeader = () => {
-    const currentY = window.scrollY || document.documentElement.scrollTop || 0;
+  function getHeader() {
+    // Tenta encontrar o header de várias formas (mais seguro)
+    return document.querySelector('.header') 
+        || document.querySelector('header')
+        || document.querySelector('[data-header]');
+  }
 
-    if (currentY > threshold) {
+  function updateHeader() {
+    const header = getHeader();
+    if (!header) {
+      ticking = false;
+      return;
+    }
+
+    const currentY = window.scrollY 
+                  || document.documentElement.scrollTop 
+                  || document.body.scrollTop 
+                  || 0;
+
+    if (currentY > THRESHOLD) {
       header.classList.add('header-hidden');
     } else {
       header.classList.remove('header-hidden');
     }
 
     ticking = false;
-  };
+  }
 
+  // Listener de scroll
   window.addEventListener('scroll', () => {
     if (!ticking) {
       window.requestAnimationFrame(updateHeader);
@@ -1757,7 +1771,22 @@
     }
   }, { passive: true });
 
-  // Garante o estado correto ao carregar a página
+  // Atualiza também quando a página carrega ou muda (útil em SPA)
+  window.addEventListener('load', updateHeader);
+  window.addEventListener('DOMContentLoaded', updateHeader);
+
+  // Caso seja SPA (React, Vue, Next, etc.)
+  // Observa mudanças no DOM para pegar o header quando ele for criado
+  const observer = new MutationObserver(() => {
+    updateHeader();
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  // Executa uma vez no início
   updateHeader();
 })();
   </script>
