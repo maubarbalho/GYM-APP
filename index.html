@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0a0e17" />
-  <meta name="description" content="MARSB-GYM" />
+  <meta name="description" content="Plano de Treino MARSB-GYM Avançado - Hipertrofia" />
   <title>MARSB-GYM</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-192.png" />
@@ -56,6 +56,12 @@
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
       padding: 12px 16px;
+      transition: transform 0.28s ease;
+      will-change: transform;
+    }
+
+    .header.header-hidden {
+      transform: translateY(-100%);
     }
 
     .header-inner { max-width: 640px; margin: 0 auto; }
@@ -490,7 +496,7 @@
     <div class="header-inner">
       <div class="header-top">
         <div>
-          <h1>Treino ABCD</h1>
+          <h1>MARSB-GYM</h1>
           <div class="subtitle">Hipertrofia Avançada • 4 Semanas</div>
         </div>
         <div class="week-selector" id="weekSelector">
@@ -795,12 +801,12 @@
 
     function loadState() {
       try {
-        const raw = localStorage.getItem('treinoABCD_v2');
+        const raw = localStorage.getItem('marsbGym_v2');
         if (raw) return normalizeState(JSON.parse(raw));
       } catch (e) {}
       // migrate from v1 if exists
       try {
-        const old = localStorage.getItem('treinoABCD_v1');
+        const old = localStorage.getItem('marsbGym_v1');
         if (old) {
           const o = JSON.parse(old);
           return normalizeState({
@@ -844,7 +850,7 @@
     }
 
     function saveState() {
-      localStorage.setItem('treinoABCD_v2', JSON.stringify(state));
+      localStorage.setItem('marsbGym_v2', JSON.stringify(state));
     }
 
     function todayKey() {
@@ -1476,7 +1482,7 @@
     // ===================== BACKUP / RESTORE (JSON) =====================
     function exportBackupJSON() {
       const payload = {
-        app: 'TreinoABCD', version: 2,
+        app: 'MARSB-GYM', version: 2,
         exportedAt: new Date().toISOString(),
         state
       };
@@ -1484,7 +1490,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `treino-abcd-backup-${todayKey()}.json`;
+      a.download = `marsb-gym-backup-${todayKey()}.json`;
       a.click();
       URL.revokeObjectURL(url);
       showToast('Backup exportado!');
@@ -1534,6 +1540,7 @@
         renderQuickStart();
         updateStats();
       }
+      document.querySelector('.header').classList.remove('header-hidden');
       window.scrollTo(0, 0);
     }
 
@@ -1575,7 +1582,7 @@
     function exportProgress() {
       const lines = [];
       lines.push('═══════════════════════════════════════');
-      lines.push('  TREINO ABCD AVANÇADO — PROGRESSO');
+      lines.push('  MARSB-GYM — PROGRESSO');
       lines.push('═══════════════════════════════════════');
       lines.push(`Exportado em: ${new Date().toLocaleString('pt-BR')}`);
       lines.push(`Semana atual: ${currentWeek} — ${WEEKS[currentWeek].title}`);
@@ -1619,7 +1626,7 @@
       // Try Web Share API first (great on iPhone)
       if (navigator.share) {
         navigator.share({
-          title: 'Progresso Treino ABCD',
+          title: 'Progresso MARSB-GYM',
           text: text
         }).then(() => showToast('Compartilhado!'))
           .catch(() => fallbackCopy(text));
@@ -1656,7 +1663,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `treino-abcd-progresso-${todayKey()}.csv`;
+      a.download = `marsb-gym-progresso-${todayKey()}.csv`;
       a.click();
       URL.revokeObjectURL(url);
       showToast('CSV baixado!');
@@ -1719,6 +1726,31 @@
         navigator.serviceWorker.register('sw.js').catch(() => {});
       });
     }
+
+    // ===================== HEADER AUTO-HIDE ON SCROLL =====================
+    (function () {
+      const header = document.querySelector('.header');
+      let lastY = window.scrollY;
+      let ticking = false;
+
+      window.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const currentY = window.scrollY;
+          const scrolledDown = currentY > lastY;
+          const pastThreshold = currentY > 56;
+
+          if (scrolledDown && pastThreshold) {
+            header.classList.add('header-hidden');
+          } else {
+            header.classList.remove('header-hidden');
+          }
+          lastY = currentY <= 0 ? 0 : currentY;
+          ticking = false;
+        });
+      }, { passive: true });
+    })();
   </script>
 </body>
 </html>
