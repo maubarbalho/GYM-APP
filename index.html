@@ -49,11 +49,9 @@
     }
 
     .header {
-      position: fixed;
+      position: sticky;
       top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
+      z-index: 50;
       background: rgba(10, 14, 23, 0.92);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
@@ -619,7 +617,7 @@
         </ul>
       </div>
       <p style="text-align:center;font-size:0.75rem;color:var(--text-muted);margin-top:30px;">
-        Plano elaborado por MARSB • Todos os direitos reservados
+        Plano elaborado por Personal Trainer Experiente • Todos os direitos reservados
       </p>
     </div>
   </div>
@@ -1731,27 +1729,29 @@
     }
 
     // ===================== HEADER AUTO-HIDE ON SCROLL =====================
-    ((function () {
-      const header = document.querySelector('.header');
-      let lastY = window.scrollY;
-      let ticking = false;
-      window.addEventListener('scroll', () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-          const currentY = window.scrollY;
-          const scrolledDown = currentY > lastY;
-          const pastThreshold = currentY > 56;
-          if (scrolledDown && pastThreshold) {
-            header.classList.add('header-hidden');
-          } else {
-            header.classList.remove('header-hidden');
-          }
-          lastY = currentY <= 0 ? 0 : currentY;
-          ticking = false;
-        });
-      }, { passive: true });
-})();
+    (function () {
+      const header = document.querySelector('.header');
+      let lastY = window.scrollY;
+      let ticking = false;
+
+      window.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const currentY = window.scrollY;
+          const scrolledDown = currentY > lastY;
+          const pastThreshold = currentY > 56;
+
+          if (scrolledDown && pastThreshold) {
+            header.classList.add('header-hidden');
+          } else {
+            header.classList.remove('header-hidden');
+          }
+          lastY = currentY <= 0 ? 0 : currentY;
+          ticking = false;
+        });
+      }, { passive: true });
+    })();
   </script>
 </body>
 </html>
