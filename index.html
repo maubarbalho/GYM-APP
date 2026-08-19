@@ -1731,63 +1731,26 @@
     }
 
     // ===================== HEADER AUTO-HIDE ON SCROLL =====================
-    (function () {
-  const THRESHOLD = 10;
-  let ticking = false;
-
-  function getHeader() {
-    // Tenta encontrar o header de várias formas (mais seguro)
-    return document.querySelector('.header') 
-        || document.querySelector('header')
-        || document.querySelector('[data-header]');
-  }
-
-  function updateHeader() {
-    const header = getHeader();
-    if (!header) {
-      ticking = false;
-      return;
-    }
-
-    const currentY = window.scrollY 
-                  || document.documentElement.scrollTop 
-                  || document.body.scrollTop 
-                  || 0;
-
-    if (currentY > THRESHOLD) {
-      header.classList.add('header-hidden');
-    } else {
-      header.classList.remove('header-hidden');
-    }
-
-    ticking = false;
-  }
-
-  // Listener de scroll
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(updateHeader);
-      ticking = true;
-    }
-  }, { passive: true });
-
-  // Atualiza também quando a página carrega ou muda (útil em SPA)
-  window.addEventListener('load', updateHeader);
-  window.addEventListener('DOMContentLoaded', updateHeader);
-
-  // Caso seja SPA (React, Vue, Next, etc.)
-  // Observa mudanças no DOM para pegar o header quando ele for criado
-  const observer = new MutationObserver(() => {
-    updateHeader();
-  });
-
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-
-  // Executa uma vez no início
-  updateHeader();
+    ((function () {
+      const header = document.querySelector('.header');
+      let lastY = window.scrollY;
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const currentY = window.scrollY;
+          const scrolledDown = currentY > lastY;
+          const pastThreshold = currentY > 56;
+          if (scrolledDown && pastThreshold) {
+            header.classList.add('header-hidden');
+          } else {
+            header.classList.remove('header-hidden');
+          }
+          lastY = currentY <= 0 ? 0 : currentY;
+          ticking = false;
+        });
+      }, { passive: true });
 })();
   </script>
 </body>
