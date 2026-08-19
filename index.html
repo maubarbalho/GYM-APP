@@ -58,6 +58,8 @@
       padding: 12px 16px;
     }
 
+    .header-inner { max-width: 640px; margin: 0 auto; }
+
     .header-top {
       display: flex;
       justify-content: space-between;
@@ -98,7 +100,7 @@
     }
     .week-info strong { color: var(--text); }
 
-    .main { padding: 16px; max-width: 640px; margin: 0 auto; }
+    .main { padding: 16px; max-width: 640px; margin: 0 auto; width: 100%; }
 
     .card {
       background: var(--bg-card);
@@ -224,9 +226,14 @@
       background: rgba(13, 18, 30, 0.95);
       backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border-top: 1px solid var(--border);
-      display: flex; justify-content: space-around;
+      display: flex; justify-content: center;
       padding: 8px 0 calc(8px + var(--safe-bottom));
       z-index: 100;
+    }
+
+    .bottom-nav-inner {
+      display: flex; justify-content: space-around;
+      width: 100%; max-width: 640px;
     }
 
     .nav-item {
@@ -446,25 +453,57 @@
     .guided-complete-banner p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
 
     .backup-hidden-input { display: none; }
+
+    /* ===== Responsive: tablets & desktop ===== */
+    @media (min-width: 700px) {
+      .header-inner, .main, .bottom-nav-inner { max-width: 760px; }
+      .quick-start { grid-template-columns: repeat(4, 1fr); }
+      .header h1 { font-size: 1.3rem; }
+      .home-hero h2 { font-size: 1.6rem; }
+      .modal-sheet, .guided-body { max-width: 760px; margin: 0 auto; }
+    }
+
+    @media (min-width: 1000px) {
+      .header-inner, .main, .bottom-nav-inner { max-width: 880px; }
+      .progress-grid { grid-template-columns: repeat(4, 1fr); }
+      .modal-overlay { align-items: center; }
+      .modal-sheet { border-radius: 20px; max-height: 80vh; }
+    }
+
+    /* ===== Responsive: very small screens (iPhone SE etc.) ===== */
+    @media (max-width: 359px) {
+      .quick-start { gap: 8px; }
+      .qs-card { padding: 12px; }
+      .set-btn { width: 38px; height: 38px; }
+      .header h1 { font-size: 1.05rem; }
+    }
+
+    /* ===== Landscape phones: keep bottom nav from eating too much space ===== */
+    @media (max-height: 420px) and (orientation: landscape) {
+      .timer-display { font-size: 3rem; }
+      .timer-actions { gap: 10px; }
+    }
   </style>
 </head>
 <body>
   <div class="header">
-    <div class="header-top">
-      <div>
-        <h1>Treino ABCD</h1>
-        <div class="subtitle">Hipertrofia Avançada • 4 Semanas</div>
+    <div class="header-inner">
+      <div class="header-top">
+        <div>
+          <h1>Treino ABCD</h1>
+          <div class="subtitle">Hipertrofia Avançada • 4 Semanas</div>
+        </div>
+        <div class="week-selector" id="weekSelector">
+          <button class="week-btn active" data-week="1">1</button>
+          <button class="week-btn" data-week="2">2</button>
+          <button class="week-btn" data-week="3">3</button>
+          <button class="week-btn" data-week="4">4</button>
+        </div>
       </div>
-      <div class="week-selector" id="weekSelector">
-        <button class="week-btn active" data-week="1">1</button>
-        <button class="week-btn" data-week="2">2</button>
-        <button class="week-btn" data-week="3">3</button>
-        <button class="week-btn" data-week="4">4</button>
+      <div class="week-info" id="weekInfo">
+        <strong>Semana 1 — Mapeamento (RIR 1-2)</strong><br>
+        Ajuste de cargas para atingir a falha na faixa especificada deixando 1 a 2 repetições de reserva. Execução impecável.
       </div>
-    </div>
-    <div class="week-info" id="weekInfo">
-      <strong>Semana 1 — Mapeamento (RIR 1-2)</strong><br>
-      Ajuste de cargas para atingir a falha na faixa especificada deixando 1 a 2 repetições de reserva. Execução impecável.
     </div>
   </div>
 
@@ -577,10 +616,12 @@
   </div>
 
   <nav class="bottom-nav">
-    <button class="nav-item active" data-page="home"><span class="nav-icon">🏠</span><span>Início</span></button>
-    <button class="nav-item" data-page="treinos"><span class="nav-icon">💪</span><span>Treinos</span></button>
-    <button class="nav-item" data-page="progresso"><span class="nav-icon">📊</span><span>Progresso</span></button>
-    <button class="nav-item" data-page="sobre"><span class="nav-icon">ℹ️</span><span>Sobre</span></button>
+    <div class="bottom-nav-inner">
+      <button class="nav-item active" data-page="home"><span class="nav-icon">🏠</span><span>Início</span></button>
+      <button class="nav-item" data-page="treinos"><span class="nav-icon">💪</span><span>Treinos</span></button>
+      <button class="nav-item" data-page="progresso"><span class="nav-icon">📊</span><span>Progresso</span></button>
+      <button class="nav-item" data-page="sobre"><span class="nav-icon">ℹ️</span><span>Sobre</span></button>
+    </div>
   </nav>
 
   <div class="timer-overlay" id="timerOverlay">
