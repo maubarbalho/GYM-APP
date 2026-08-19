@@ -1,7 +1,7 @@
 {
-  "name": "Treino ABCD Avançado",
-  "short_name": "Treino ABCD",
-  "description": "Plano de Treino ABCD Avançado - Hipertrofia",
+  "name": "MARSB-GYM",
+  "short_name": "MARSB-GYM",
+  "description": "MARSB-GYM - Hipertrofia",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
