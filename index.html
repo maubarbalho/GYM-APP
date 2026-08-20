@@ -1235,7 +1235,7 @@
           Com altura, idade e sexo, estima-se o gasto (TMB × atividade).<br>
           <strong>Hipertrofia:</strong> ~2 g/kg prot · 4,5 g/kg carbo · 0,8 g/kg gord (superávit leve).<br>
           <strong>Déficit −400 kcal:</strong> mesma proteína e gordura; reduz ~100 g de carbo (−400 kcal).<br>
-          Porções em gramas com base na <strong>Tabela TACO</strong> (whey é referência comercial).
+          Água: ~32–40 ml/kg conforme atividade. Porções em gramas com base na <strong>Tabela TACO</strong> (whey é referência comercial).
         </p>
       </div>
     </div>
@@ -3696,6 +3696,22 @@
         '</div>'
       ).join('');
 
+      // Água do dia: ~35 ml/kg base, ajustada por atividade e objetivo
+      var waterMlPerKg = 35;
+      if (act >= 1.725) waterMlPerKg = 40;
+      else if (act <= 1.2) waterMlPerKg = 32;
+      if (goal === 'hipertrofia') waterMlPerKg += 2;
+      if (goal === 'deficit') waterMlPerKg += 1; // ajuda saciedade
+      var waterMl = Math.round(weight * waterMlPerKg);
+      // arredonda para 50 ml
+      waterMl = Math.round(waterMl / 50) * 50;
+      var waterL = waterMl / 1000;
+      var waterCups = Math.max(1, Math.round(waterMl / 250)); // copos de 250 ml
+      var waterBottles = (waterMl / 500);
+
+      const shopTotalG = shopList.reduce(function (s, it) { return s + it.g; }, 0);
+      const shopTotalKg = shopTotalG / 1000;
+
       const box = document.getElementById('menuResult');
       box.style.display = 'block';
       box.innerHTML =
@@ -3709,16 +3725,28 @@
           'Meta: <strong style="color:var(--accent)">' + Math.round(protT) + 'g</strong> prot · ' +
           Math.round(carbT) + 'g carbo · ' + Math.round(fatT) + 'g gord · ~' + Math.round(kcalT) + ' kcal' +
         '</div>' +
-        meals.map(mealHtml).join('') +
-        '<div class="menu-meal" style="margin-top:4px;">' +
-          '<div class="menu-meal-title" style="margin-bottom:8px;">🛒 Quantidades do dia (peso total)</div>' +
-          shopHtml +
-        '</div>' +
-        '<div class="menu-day-total">' +
+        // Macros + água no topo — logo abaixo de Gerar dieta
+        '<div class="menu-day-total" style="margin-bottom:8px;">' +
           '<div class="calc-metric highlight"><div class="val">' + Math.round(tot.k) + '</div><div class="lbl">kcal (' + errLabel(tot.k - kcalT, '') + ')</div></div>' +
           '<div class="calc-metric"><div class="val">' + Math.round(tot.p) + ' g</div><div class="lbl">Prot (' + errLabel(tot.p - protT, 'g') + ')</div></div>' +
           '<div class="calc-metric"><div class="val">' + Math.round(tot.c) + ' g</div><div class="lbl">Carbo (' + errLabel(tot.c - carbT, 'g') + ')</div></div>' +
           '<div class="calc-metric"><div class="val">' + Math.round(tot.f) + ' g</div><div class="lbl">Gord (' + errLabel(tot.f - fatT, 'g') + ')</div></div>' +
+        '</div>' +
+        '<div class="menu-day-total" style="margin-bottom:12px;grid-template-columns:1fr;">' +
+          '<div class="calc-metric highlight" style="text-align:left;padding:12px 14px;">' +
+            '<div class="val" style="font-size:1.25rem;">💧 ' + waterMl + ' ml · ' + waterL.toFixed(2).replace('.', ',') + ' L</div>' +
+            '<div class="lbl" style="margin-top:4px;line-height:1.4;">Água no dia · ~' + waterMlPerKg + ' ml/kg · ' +
+              waterCups + ' copos (250 ml) · ~' + waterBottles.toFixed(1).replace('.', ',') + ' garrafas (500 ml)</div>' +
+          '</div>' +
+        '</div>' +
+        meals.map(mealHtml).join('') +
+        '<div class="menu-meal" style="margin-top:4px;">' +
+          '<div class="menu-meal-title" style="margin-bottom:8px;">🛒 Quantidades do dia (peso total)</div>' +
+          shopHtml +
+          '<div class="menu-item" style="border-top:2px solid var(--border);margin-top:6px;padding-top:10px;">' +
+            '<div class="menu-item-name"><strong>Total do dia</strong></div>' +
+            '<div class="menu-item-g">' + Math.round(shopTotalG) + ' g · ' + shopTotalKg.toFixed(2).replace('.', ',') + ' kg</div>' +
+          '</div>' +
         '</div>' +
         '<p class="calc-hint">' +
           (goal === 'deficit'
