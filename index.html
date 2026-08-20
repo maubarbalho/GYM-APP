@@ -1241,6 +1241,45 @@
     </div>
   </div>
 
+  <div class="page" id="page-plano">
+    <div class="content">
+      <div class="section-title">Plano do Personal</div>
+
+      <div class="calc-card">
+        <h3>📋 Importar treino (JSON)</h3>
+        <p class="calc-desc">
+          O personal monta o arquivo no computador e o aluno faz o <strong>upload aqui</strong>.
+          O plano substitui os treinos A–D do app (pesos e histórico continuam salvos).
+        </p>
+
+        <div id="planoStatus" class="ai-status warn" style="margin-bottom:12px;">Nenhum plano personalizado — usando treino padrão MARSB</div>
+
+        <div class="form-field">
+          <label>Arquivo do treino (.json)</label>
+          <input type="file" id="planoFile" accept=".json,application/json" style="padding:10px;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:0.85rem;" />
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn-action primary" onclick="importPlanoFile()">Importar plano</button>
+          <button class="btn-action" onclick="downloadPlanoTemplate()">Baixar modelo em branco</button>
+          <button class="btn-action" onclick="downloadPlanoAtual()">Exportar plano atual</button>
+          <button class="btn-action danger" onclick="resetPlanoPadrao()">Voltar ao treino padrão</button>
+        </div>
+
+        <div id="planoPreview" class="calc-result" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <div class="calc-card" style="margin-top:12px;">
+        <h3>Formato do arquivo (para o personal)</h3>
+        <p class="calc-desc" style="margin:0;line-height:1.5;">
+          Arquivo JSON com treinos <strong>A, B, C e D</strong>. Cada exercício precisa de:
+          <code>id</code>, <code>nome</code>, <code>series</code>, <code>reps</code>, <code>descanso</code> (segundos) e <code>tech</code>.<br><br>
+          Use <strong>Baixar modelo em branco</strong>, edite no computador (Bloco de Notas, VS Code…) e envie o arquivo ao aluno.
+        </p>
+      </div>
+    </div>
+  </div>
+
 <div class="page" id="page-sobre">
       <div class="about-section">
         <h3>Estrutura do Programa</h3>
@@ -1279,6 +1318,7 @@
       <button class="nav-item" data-page="dieta"><span class="nav-icon">🍽</span><span>Dieta</span></button>
       <button class="nav-item" data-page="ai"><span class="nav-icon">🤖</span><span>Coach</span></button>
       <button class="nav-item" data-page="progresso"><span class="nav-icon">📊</span><span>Prog.</span></button>
+      <button class="nav-item" data-page="plano"><span class="nav-icon">📋</span><span>Plano</span></button>
       <button class="nav-item" data-page="sobre"><span class="nav-icon">ℹ️</span><span>Sobre</span></button>
     </div>
   </nav>
@@ -1420,7 +1460,7 @@
   <script src="https://js.puter.com/v2/"></script>
   <script>
     // ===================== DATA =====================
-    const TREINOS = {
+    const TREINOS_BASE = {
       A: {
         id: 'A', nome: 'Peito + Core (Supra & Infra)',
         foco: 'Tensão mecânica no peitoral e fortalecimento reto abdominal',
@@ -1512,7 +1552,9 @@
         exerciseNotes: {},
         prefs: { autoTimer: true, vibrate: true },
         bodyWeights: [],
-        bodyMeta: { heightCm: null, goalKg: null }
+        bodyMeta: { heightCm: null, goalKg: null },
+        customProgram: null,
+        customProgramMeta: null
       };
     }
 
@@ -1529,6 +1571,8 @@
       s.prefs = Object.assign({ autoTimer: true, vibrate: true }, s.prefs || {});
       s.bodyWeights = Array.isArray(s.bodyWeights) ? s.bodyWeights : [];
       s.bodyMeta = Object.assign({ heightCm: null, goalKg: null }, s.bodyMeta || {});
+      if (s.customProgram && !s.customProgram.A) s.customProgram = null;
+      s.customProgramMeta = s.customProgramMeta || null;
       return s;
     }
 
@@ -1554,6 +1598,14 @@
       return defaultState();
     }
 
+
+    function treinosMap() {
+      if (typeof state !== 'undefined' && state && state.customProgram && state.customProgram.A) {
+        return state.customProgram;
+      }
+      return TREINOS_BASE;
+    }
+
     // ===================== EXERCISE MERGE (edits + custom) =====================
     function applyOverride(ex) {
       const o = state.exerciseOverrides[ex.id];
@@ -1561,14 +1613,14 @@
     }
 
     function getTreinoExercises(treinoId) {
-      const base = TREINOS[treinoId].exercises.map(ex => Object.assign({ isCustom: false }, applyOverride(ex)));
+      const base = treinosMap()[treinoId].exercises.map(ex => Object.assign({ isCustom: false }, applyOverride(ex)));
       const custom = (state.customExercises[treinoId] || []).map(ex => Object.assign({ isCustom: true }, applyOverride(ex)));
       return [...base, ...custom];
     }
 
     function getAllExercisesFlat() {
       let all = [];
-      Object.keys(TREINOS).forEach(tid => { all = all.concat(getTreinoExercises(tid).map(ex => ({ ...ex, treinoId: tid }))); });
+      Object.keys(treinosMap()).forEach(tid => { all = all.concat(getTreinoExercises(tid).map(ex => ({ ...ex, treinoId: tid }))); });
       return all;
     }
 
@@ -1600,7 +1652,7 @@
     function renderQuickStart() {
       const container = document.getElementById('quickStart');
       container.innerHTML = '';
-      Object.values(TREINOS).forEach(t => {
+      Object.values(treinosMap()).forEach(t => {
         const done = getTreinoExercises(t.id).length > 0 && isTreinoComplete(t.id);
         const el = document.createElement('div');
         el.className = 'qs-card';
@@ -1618,7 +1670,7 @@
       const container = document.getElementById('treinosContainer');
       container.innerHTML = '';
 
-      Object.values(TREINOS).forEach(treino => {
+      Object.values(treinosMap()).forEach(treino => {
         const exercises = getTreinoExercises(treino.id);
         const card = document.createElement('div');
         card.className = 'card';
@@ -1760,7 +1812,7 @@
         return `
           <div class="history-item">
             <div class="hi-date">${formatDate(h.date)} • Semana ${h.week}</div>
-            <div class="hi-treino">Treino ${h.treino} — ${TREINOS[h.treino]?.nome || ''}</div>
+            <div class="hi-treino">Treino ${h.treino} — ${treinosMap()[h.treino]?.nome || ''}</div>
             ${weightsStr ? `<div class="hi-weights">${weightsStr}</div>` : ''}
             <div class="hi-actions">
               <button class="hi-del" onclick="deleteHistoryEntry('${h.id}')">Apagar registro</button>
@@ -1771,7 +1823,7 @@
     }
 
     function findExercise(exId) {
-      for (const tid of Object.keys(TREINOS)) {
+      for (const tid of Object.keys(treinosMap())) {
         const ex = getTreinoExercises(tid).find(e => e.id === exId);
         if (ex) return ex;
       }
@@ -1823,7 +1875,7 @@
       let weightsCount = 0;
       let volumeToday = 0;
 
-      Object.keys(TREINOS).forEach(tid => {
+      Object.keys(treinosMap()).forEach(tid => {
         getTreinoExercises(tid).forEach(ex => {
           const arr = state.sets[ex.id] || [];
           const done = arr.filter(Boolean).length;
@@ -2403,6 +2455,9 @@
           if (sorted.length) mw.value = sorted[sorted.length - 1].kg;
         }
       }
+      if (page === 'plano') {
+        initPlanoPage();
+      }
       if (page === 'ai') {
         initAiPage();
       }
@@ -2645,7 +2700,7 @@
       lines.push('Semana atual: ' + currentWeek + ' — ' + (WEEKS[currentWeek]?.title || ''));
       lines.push('Foco da semana: ' + (WEEKS[currentWeek]?.desc || ''));
       lines.push('');
-      Object.values(TREINOS).forEach(t => {
+      Object.values(treinosMap()).forEach(t => {
         lines.push('Treino ' + t.id + ' — ' + t.nome);
         getTreinoExercises(t.id).forEach(ex => {
           const w = state.weights[ex.id];
@@ -3351,6 +3406,237 @@
     }
 
 
+
+    // ===================== PERSONAL TRAINER PLAN IMPORT =====================
+    function validateProgram(prog) {
+      if (!prog || typeof prog !== 'object') return 'JSON inválido';
+      // Accept { treinos: {A...} } or direct { A: {...} }
+      var map = prog.treinos || prog;
+      var keys = ['A', 'B', 'C', 'D'];
+      for (var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        if (!map[k]) return 'Falta o treino ' + k;
+        if (!map[k].nome) return 'Treino ' + k + ' sem nome';
+        if (!Array.isArray(map[k].exercises) || !map[k].exercises.length) return 'Treino ' + k + ' sem exercícios';
+        for (var j = 0; j < map[k].exercises.length; j++) {
+          var ex = map[k].exercises[j];
+          if (!ex.id || !ex.nome) return 'Exercício inválido no treino ' + k + ' (id/nome)';
+          if (!ex.series || ex.series < 1) return 'Séries inválidas em ' + ex.nome;
+        }
+      }
+      return null;
+    }
+
+    function normalizeProgram(prog) {
+      var map = prog.treinos || prog;
+      var colors = { A: 'blue', B: 'green', C: 'orange', D: 'purple' };
+      var out = {};
+      ['A', 'B', 'C', 'D'].forEach(function (k) {
+        var t = map[k];
+        out[k] = {
+          id: k,
+          nome: t.nome,
+          foco: t.foco || '',
+          color: t.color || colors[k],
+          exercises: t.exercises.map(function (ex, idx) {
+            return {
+              id: String(ex.id || (k.toLowerCase() + (idx + 1))),
+              nome: String(ex.nome),
+              series: parseInt(ex.series, 10) || 3,
+              reps: String(ex.reps || '8 a 12'),
+              descanso: parseInt(ex.descanso, 10) || 90,
+              tech: String(ex.tech || '')
+            };
+          })
+        };
+      });
+      return out;
+    }
+
+    function updatePlanoStatus() {
+      var el = document.getElementById('planoStatus');
+      if (!el) return;
+      if (state.customProgram && state.customProgram.A) {
+        var meta = state.customProgramMeta || {};
+        el.className = 'ai-status ok';
+        el.textContent = 'Plano personalizado ativo' +
+          (meta.name ? ' · ' + meta.name : '') +
+          (meta.author ? ' · PT: ' + meta.author : '');
+      } else {
+        el.className = 'ai-status warn';
+        el.textContent = 'Nenhum plano personalizado — usando treino padrão MARSB';
+      }
+    }
+
+    function renderPlanoPreview(map, meta) {
+      var box = document.getElementById('planoPreview');
+      if (!box) return;
+      var html = '';
+      if (meta && (meta.name || meta.author)) {
+        html += '<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">' +
+          (meta.name ? '<strong style="color:var(--text)">' + meta.name + '</strong> ' : '') +
+          (meta.author ? '· PT: ' + meta.author : '') + '</div>';
+      }
+      ['A', 'B', 'C', 'D'].forEach(function (k) {
+        var t = map[k];
+        html += '<div class="menu-meal" style="margin-bottom:8px;">' +
+          '<div class="menu-meal-title">Treino ' + k + ' — ' + t.nome + '</div>' +
+          '<div class="menu-item-sub" style="margin-bottom:6px;">' + (t.foco || '') + ' · ' + t.exercises.length + ' exercícios</div>';
+        t.exercises.forEach(function (ex) {
+          html += '<div class="menu-item">' +
+            '<div><div class="menu-item-name">' + ex.nome + '</div>' +
+            '<div class="menu-item-sub">' + ex.series + '× ' + ex.reps + ' · descanso ' + ex.descanso + 's' +
+            (ex.tech ? ' · ' + ex.tech : '') + '</div></div></div>';
+        });
+        html += '</div>';
+      });
+      box.style.display = 'block';
+      box.innerHTML = html;
+    }
+
+    function importPlanoFile() {
+      var input = document.getElementById('planoFile');
+      if (!input || !input.files || !input.files[0]) {
+        showToast('Selecione um arquivo JSON');
+        return;
+      }
+      var file = input.files[0];
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          var data = JSON.parse(e.target.result);
+          var err = validateProgram(data);
+          if (err) {
+            showToast(err);
+            return;
+          }
+          var map = normalizeProgram(data);
+          state.customProgram = map;
+          state.customProgramMeta = {
+            name: data.name || file.name.replace(/\.json$/i, ''),
+            author: data.author || '',
+            importedAt: new Date().toISOString()
+          };
+          // clear exercise overrides that may not match new ids (optional: keep weights by name later)
+          state.customExercises = { A: [], B: [], C: [], D: [] };
+          saveState();
+          updatePlanoStatus();
+          renderPlanoPreview(map, state.customProgramMeta);
+          showToast('Plano importado!');
+          if (typeof renderQuickStart === 'function') renderQuickStart();
+        } catch (err) {
+          showToast('JSON inválido: ' + (err.message || err));
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function buildTemplateProgram() {
+      return {
+        version: 1,
+        name: 'Plano do Personal',
+        author: 'Nome do Personal',
+        treinos: {
+          A: {
+            id: 'A',
+            nome: 'Exemplo — Peito e tríceps',
+            foco: 'Descreva o foco do treino',
+            color: 'blue',
+            exercises: [
+              { id: 'a1', nome: 'Supino reto com barra', series: 4, reps: '6 a 8', descanso: 150, tech: 'RIR 1-2' },
+              { id: 'a2', nome: 'Crucifixo com halteres', series: 3, reps: '10 a 12', descanso: 90, tech: 'Controle na descida' },
+              { id: 'a3', nome: 'Tríceps pulley', series: 3, reps: '12 a 15', descanso: 75, tech: 'Cotovelo fixo' }
+            ]
+          },
+          B: {
+            id: 'B',
+            nome: 'Exemplo — Costas e bíceps',
+            foco: 'Largura e espessura',
+            color: 'green',
+            exercises: [
+              { id: 'b1', nome: 'Puxada alta', series: 4, reps: '8 a 10', descanso: 120, tech: 'Peito para cima' },
+              { id: 'b2', nome: 'Remada curvada', series: 4, reps: '6 a 8', descanso: 120, tech: 'Tronco firme' },
+              { id: 'b3', nome: 'Rosca direta', series: 3, reps: '10 a 12', descanso: 75, tech: 'Sem balanço' }
+            ]
+          },
+          C: {
+            id: 'C',
+            nome: 'Exemplo — Pernas',
+            foco: 'Quadríceps e posterior',
+            color: 'orange',
+            exercises: [
+              { id: 'c1', nome: 'Agachamento livre', series: 4, reps: '6 a 8', descanso: 180, tech: 'Profundidade controlada' },
+              { id: 'c2', nome: 'Leg press', series: 3, reps: '10 a 12', descanso: 120, tech: 'Amplitude completa' },
+              { id: 'c3', nome: 'Mesa flexora', series: 3, reps: '10 a 12', descanso: 90, tech: 'Contração no topo' }
+            ]
+          },
+          D: {
+            id: 'D',
+            nome: 'Exemplo — Ombros e core',
+            foco: 'Deltoides e estabilidade',
+            color: 'purple',
+            exercises: [
+              { id: 'd1', nome: 'Desenvolvimento com halteres', series: 4, reps: '8 a 10', descanso: 120, tech: 'Sem arquear demais' },
+              { id: 'd2', nome: 'Elevação lateral', series: 3, reps: '12 a 15', descanso: 75, tech: 'Leve cotovelo flexionado' },
+              { id: 'd3', nome: 'Prancha', series: 3, reps: '30 a 45s', descanso: 60, tech: 'Core firme' }
+            ]
+          }
+        }
+      };
+    }
+
+    function downloadJson(obj, filename) {
+      var blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadPlanoTemplate() {
+      downloadJson(buildTemplateProgram(), 'marsb-plano-modelo.json');
+      showToast('Modelo baixado');
+    }
+
+    function downloadPlanoAtual() {
+      var map = treinosMap();
+      var payload = {
+        version: 1,
+        name: (state.customProgramMeta && state.customProgramMeta.name) || 'Plano atual MARSB',
+        author: (state.customProgramMeta && state.customProgramMeta.author) || '',
+        treinos: map
+      };
+      downloadJson(payload, 'marsb-plano-atual.json');
+      showToast('Plano exportado');
+    }
+
+    function resetPlanoPadrao() {
+      if (!state.customProgram) {
+        showToast('Já está no treino padrão');
+        return;
+      }
+      if (!confirm('Remover o plano personalizado e voltar ao treino padrão MARSB?')) return;
+      state.customProgram = null;
+      state.customProgramMeta = null;
+      saveState();
+      updatePlanoStatus();
+      var box = document.getElementById('planoPreview');
+      if (box) { box.style.display = 'none'; box.innerHTML = ''; }
+      if (typeof renderQuickStart === 'function') renderQuickStart();
+      showToast('Treino padrão restaurado');
+    }
+
+    function initPlanoPage() {
+      updatePlanoStatus();
+      if (state.customProgram && state.customProgram.A) {
+        renderPlanoPreview(state.customProgram, state.customProgramMeta);
+      }
+    }
+
     // ===================== DAILY MENU (3 MEALS, TACO) =====================
     function menuSeg(id, attr) {
       const btn = document.querySelector('#' + id + ' button.active');
@@ -3708,6 +3994,7 @@
       var waterL = waterMl / 1000;
       var waterCups = Math.max(1, Math.round(waterMl / 250)); // copos de 250 ml
       var waterBottles = (waterMl / 500);
+      var waterBottles1L = (waterMl / 1000);
 
       const shopTotalG = shopList.reduce(function (s, it) { return s + it.g; }, 0);
       const shopTotalKg = shopTotalG / 1000;
@@ -3736,7 +4023,7 @@
           '<div class="calc-metric highlight" style="text-align:left;padding:12px 14px;">' +
             '<div class="val" style="font-size:1.25rem;">💧 ' + waterMl + ' ml · ' + waterL.toFixed(2).replace('.', ',') + ' L</div>' +
             '<div class="lbl" style="margin-top:4px;line-height:1.4;">Água no dia · ~' + waterMlPerKg + ' ml/kg · ' +
-              waterCups + ' copos (250 ml) · ~' + waterBottles.toFixed(1).replace('.', ',') + ' garrafas (500 ml)</div>' +
+              waterCups + ' copos (250 ml) · ~' + waterBottles.toFixed(1).replace('.', ',') + '× 500 ml · ~' + waterBottles1L.toFixed(1).replace('.', ',') + '× 1 L</div>' +
           '</div>' +
         '</div>' +
         meals.map(mealHtml).join('') +
@@ -4104,7 +4391,7 @@
       lines.push('');
 
       lines.push('── PESOS ATUAIS ──');
-      Object.values(TREINOS).forEach(t => {
+      Object.values(treinosMap()).forEach(t => {
         lines.push(`\nTreino ${t.id} — ${t.nome}`);
         getTreinoExercises(t.id).forEach(ex => {
           const w = state.weights[ex.id] || '—';
@@ -4146,7 +4433,7 @@
       });
 
       // Also current weights if not in history
-      Object.values(TREINOS).forEach(t => {
+      Object.values(treinosMap()).forEach(t => {
         getTreinoExercises(t.id).forEach(ex => {
           const w = state.weights[ex.id];
           if (w) {
