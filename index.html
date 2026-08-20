@@ -1241,40 +1241,90 @@
     </div>
   </div>
 
-  <div class="page" id="page-plano">
+    <div class="page" id="page-plano">
     <div class="content">
       <div class="section-title">Plano do Personal</div>
 
       <div class="calc-card">
-        <h3>📋 Importar treino (JSON)</h3>
+        <h3>📋 Editor de treinos</h3>
         <p class="calc-desc">
-          O personal monta o arquivo no computador e o aluno faz o <strong>upload aqui</strong>.
-          O plano substitui os treinos A–D do app (pesos e histórico continuam salvos).
+          Monte o plano aqui, sem JSON. Escolha o treino A–D, adicione exercícios e salve.
+          Depois exporte um <strong>arquivo de texto simples</strong> para enviar ao aluno.
         </p>
-
-        <div id="planoStatus" class="ai-status warn" style="margin-bottom:12px;">Nenhum plano personalizado — usando treino padrão MARSB</div>
+        <div id="planoStatus" class="ai-status warn" style="margin-bottom:12px;">Usando treino padrão MARSB</div>
 
         <div class="form-field">
-          <label>Arquivo do treino (.json)</label>
-          <input type="file" id="planoFile" accept=".json,application/json" style="padding:10px;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:0.85rem;" />
+          <label>Nome do plano</label>
+          <input type="text" id="planoNome" placeholder="Ex: Plano João — hipertrofia" />
+        </div>
+        <div class="form-field">
+          <label>Nome do personal</label>
+          <input type="text" id="planoAuthor" placeholder="Ex: Personal Maria" />
         </div>
 
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="btn-action primary" onclick="importPlanoFile()">Importar plano</button>
-          <button class="btn-action" onclick="downloadPlanoTemplate()">Baixar modelo em branco</button>
-          <button class="btn-action" onclick="downloadPlanoAtual()">Exportar plano atual</button>
+        <div class="form-field">
+          <label>Editar treino</label>
+          <div class="seg-control" id="planoEditKey">
+            <button type="button" class="active" data-key="A">A</button>
+            <button type="button" data-key="B">B</button>
+            <button type="button" data-key="C">C</button>
+            <button type="button" data-key="D">D</button>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Nome do treino</label>
+          <input type="text" id="planoTreinoNome" placeholder="Ex: Peito e tríceps" />
+        </div>
+        <div class="form-field">
+          <label>Foco (opcional)</label>
+          <input type="text" id="planoTreinoFoco" placeholder="Ex: Hipertrofia de peitoral" />
+        </div>
+
+        <div id="planoExList" style="margin:10px 0;"></div>
+
+        <div class="calc-card" style="margin:10px 0;padding:12px;background:var(--bg);">
+          <div style="font-size:0.8rem;font-weight:700;margin-bottom:8px;color:var(--text-muted);">Adicionar exercício</div>
+          <div class="form-field">
+            <label>Nome</label>
+            <input type="text" id="planoExNome" placeholder="Ex: Supino reto" />
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="form-field" style="margin:0;">
+              <label>Séries</label>
+              <input type="number" id="planoExSeries" inputmode="numeric" placeholder="4" min="1" max="10" />
+            </div>
+            <div class="form-field" style="margin:0;">
+              <label>Reps</label>
+              <input type="text" id="planoExReps" placeholder="8 a 10" />
+            </div>
+            <div class="form-field" style="margin:0;">
+              <label>Descanso (seg)</label>
+              <input type="number" id="planoExDescanso" inputmode="numeric" placeholder="120" min="0" />
+            </div>
+            <div class="form-field" style="margin:0;">
+              <label>Técnica / nota</label>
+              <input type="text" id="planoExTech" placeholder="RIR 1-2" />
+            </div>
+          </div>
+          <button class="btn-action primary" style="margin-top:10px;" onclick="planoAddExercise()">Adicionar ao treino</button>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+          <button class="btn-action primary" onclick="planoSaveProgram()">Salvar plano no app</button>
+          <button class="btn-action" onclick="planoExportText()">Exportar texto (.txt) para enviar</button>
+          <button class="btn-action" onclick="document.getElementById('planoFile').click()">Importar arquivo .txt</button>
+          <input type="file" id="planoFile" accept=".txt,text/plain,.json,application/json" style="display:none;" onchange="planoOnFileChosen(event)" />
           <button class="btn-action danger" onclick="resetPlanoPadrao()">Voltar ao treino padrão</button>
         </div>
-
-        <div id="planoPreview" class="calc-result" style="display:none;margin-top:12px;"></div>
       </div>
 
       <div class="calc-card" style="margin-top:12px;">
-        <h3>Formato do arquivo (para o personal)</h3>
+        <h3>Como o personal usa</h3>
         <p class="calc-desc" style="margin:0;line-height:1.5;">
-          Arquivo JSON com treinos <strong>A, B, C e D</strong>. Cada exercício precisa de:
-          <code>id</code>, <code>nome</code>, <code>series</code>, <code>reps</code>, <code>descanso</code> (segundos) e <code>tech</code>.<br><br>
-          Use <strong>Baixar modelo em branco</strong>, edite no computador (Bloco de Notas, VS Code…) e envie o arquivo ao aluno.
+          1. Preencha nome do plano e monte os treinos A–D no editor<br>
+          2. Toque em <strong>Salvar plano no app</strong><br>
+          3. Toque em <strong>Exportar texto</strong> e envie o arquivo (WhatsApp, e-mail…)<br>
+          4. O aluno abre a aba <strong>Plano</strong> → Importar arquivo → pronto
         </p>
       </div>
     </div>
@@ -3407,22 +3457,309 @@
 
 
 
-    // ===================== PERSONAL TRAINER PLAN IMPORT =====================
+
+    // ===================== PERSONAL TRAINER PLAN (simple editor + text file) =====================
+    var planoDraft = null; // working copy { A:{...}, B:... }
+
+    function cloneProgram(map) {
+      return JSON.parse(JSON.stringify(map));
+    }
+
+    function ensurePlanoDraft() {
+      if (!planoDraft) {
+        planoDraft = cloneProgram(treinosMap());
+      }
+      return planoDraft;
+    }
+
+    function planoCurrentKey() {
+      var btn = document.querySelector('#planoEditKey button.active');
+      return btn ? btn.getAttribute('data-key') : 'A';
+    }
+
+    function updatePlanoStatus() {
+      var el = document.getElementById('planoStatus');
+      if (!el) return;
+      if (state.customProgram && state.customProgram.A) {
+        var meta = state.customProgramMeta || {};
+        el.className = 'ai-status ok';
+        el.textContent = 'Plano personalizado ativo' +
+          (meta.name ? ' · ' + meta.name : '') +
+          (meta.author ? ' · PT: ' + meta.author : '');
+      } else {
+        el.className = 'ai-status warn';
+        el.textContent = 'Usando treino padrão MARSB — edite e salve para personalizar';
+      }
+    }
+
+    function planoLoadFieldsFromDraft() {
+      var key = planoCurrentKey();
+      var draft = ensurePlanoDraft();
+      var t = draft[key];
+      var nomeEl = document.getElementById('planoTreinoNome');
+      var focoEl = document.getElementById('planoTreinoFoco');
+      if (nomeEl) nomeEl.value = t.nome || '';
+      if (focoEl) focoEl.value = t.foco || '';
+      var meta = state.customProgramMeta || {};
+      var pn = document.getElementById('planoNome');
+      var pa = document.getElementById('planoAuthor');
+      if (pn && !pn.value) pn.value = meta.name || '';
+      if (pa && !pa.value) pa.value = meta.author || '';
+      planoRenderExList();
+    }
+
+    function planoSyncTreinoHeader() {
+      var key = planoCurrentKey();
+      var draft = ensurePlanoDraft();
+      var nome = (document.getElementById('planoTreinoNome').value || '').trim();
+      var foco = (document.getElementById('planoTreinoFoco').value || '').trim();
+      if (nome) draft[key].nome = nome;
+      draft[key].foco = foco;
+    }
+
+    function planoRenderExList() {
+      var key = planoCurrentKey();
+      var draft = ensurePlanoDraft();
+      var list = document.getElementById('planoExList');
+      if (!list) return;
+      var exercises = draft[key].exercises || [];
+      if (!exercises.length) {
+        list.innerHTML = '<p class="calc-hint" style="margin:0;">Nenhum exercício neste treino. Adicione abaixo.</p>';
+        return;
+      }
+      var html = '';
+      exercises.forEach(function (ex, idx) {
+        html += '<div class="menu-item" style="border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;background:var(--bg);">' +
+          '<div style="flex:1;">' +
+            '<div class="menu-item-name">' + (idx + 1) + '. ' + ex.nome + '</div>' +
+            '<div class="menu-item-sub">' + ex.series + ' séries · ' + ex.reps + ' reps · ' + ex.descanso + 's' +
+            (ex.tech ? ' · ' + ex.tech : '') + '</div>' +
+          '</div>' +
+          '<button type="button" class="btn-action danger" style="padding:6px 10px;min-width:auto;font-size:0.75rem;" ' +
+            'onclick="planoRemoveExercise(' + idx + ')">Remover</button>' +
+        '</div>';
+      });
+      list.innerHTML = html;
+    }
+
+    function planoAddExercise() {
+      planoSyncTreinoHeader();
+      var nome = (document.getElementById('planoExNome').value || '').trim();
+      if (!nome) { showToast('Informe o nome do exercício'); return; }
+      var series = parseInt(document.getElementById('planoExSeries').value, 10) || 3;
+      var reps = (document.getElementById('planoExReps').value || '8 a 12').trim();
+      var descanso = parseInt(document.getElementById('planoExDescanso').value, 10);
+      if (isNaN(descanso)) descanso = 90;
+      var tech = (document.getElementById('planoExTech').value || '').trim();
+      var key = planoCurrentKey();
+      var draft = ensurePlanoDraft();
+      var id = key.toLowerCase() + '_' + Date.now().toString(36);
+      draft[key].exercises.push({ id: id, nome: nome, series: series, reps: reps, descanso: descanso, tech: tech });
+      document.getElementById('planoExNome').value = '';
+      document.getElementById('planoExTech').value = '';
+      planoRenderExList();
+      showToast('Exercício adicionado');
+    }
+
+    function planoRemoveExercise(idx) {
+      var key = planoCurrentKey();
+      var draft = ensurePlanoDraft();
+      draft[key].exercises.splice(idx, 1);
+      planoRenderExList();
+    }
+
+    function planoSaveProgram() {
+      planoSyncTreinoHeader();
+      var draft = ensurePlanoDraft();
+      // validate all have at least 1 exercise
+      var missing = ['A','B','C','D'].filter(function (k) { return !draft[k].exercises || !draft[k].exercises.length; });
+      if (missing.length) {
+        showToast('Treino ' + missing.join(', ') + ' sem exercícios');
+        return;
+      }
+      state.customProgram = cloneProgram(draft);
+      state.customProgramMeta = {
+        name: (document.getElementById('planoNome').value || '').trim() || 'Plano personalizado',
+        author: (document.getElementById('planoAuthor').value || '').trim(),
+        importedAt: new Date().toISOString()
+      };
+      state.customExercises = { A: [], B: [], C: [], D: [] };
+      saveState();
+      updatePlanoStatus();
+      if (typeof renderQuickStart === 'function') renderQuickStart();
+      showToast('Plano salvo no app');
+    }
+
+    // ---- Simple text format (human-friendly) ----
+    // TREINO A: Nome
+    // Foco: ...
+    // Nome do exercício | séries | reps | descanso_seg | técnica
+    function programToText(map, meta) {
+      meta = meta || {};
+      var lines = [];
+      lines.push('PLANO: ' + (meta.name || 'Plano personalizado'));
+      if (meta.author) lines.push('PERSONAL: ' + meta.author);
+      lines.push('');
+      ['A','B','C','D'].forEach(function (k) {
+        var t = map[k];
+        lines.push('TREINO ' + k + ': ' + (t.nome || ('Treino ' + k)));
+        if (t.foco) lines.push('Foco: ' + t.foco);
+        (t.exercises || []).forEach(function (ex) {
+          lines.push(
+            (ex.nome || 'Exercício') + ' | ' +
+            (ex.series || 3) + ' | ' +
+            (ex.reps || '8 a 12') + ' | ' +
+            (ex.descanso != null ? ex.descanso : 90) + ' | ' +
+            (ex.tech || '')
+          );
+        });
+        lines.push('');
+      });
+      lines.push('---');
+      lines.push('Cada linha de exercício: Nome | Séries | Reps | Descanso(seg) | Técnica');
+      lines.push('Pode editar este arquivo no Bloco de Notas e importar de novo no app.');
+      return lines.join('\n');
+    }
+
+    function parseTextProgram(text) {
+      var lines = String(text).replace(/\r\n/g, '\n').split('\n');
+      var meta = { name: '', author: '' };
+      var map = {
+        A: { id: 'A', nome: 'Treino A', foco: '', color: 'blue', exercises: [] },
+        B: { id: 'B', nome: 'Treino B', foco: '', color: 'green', exercises: [] },
+        C: { id: 'C', nome: 'Treino C', foco: '', color: 'orange', exercises: [] },
+        D: { id: 'D', nome: 'Treino D', foco: '', color: 'purple', exercises: [] }
+      };
+      var cur = null;
+      var colors = { A: 'blue', B: 'green', C: 'orange', D: 'purple' };
+
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (!line || line.indexOf('---') === 0 || line.indexOf('Cada linha') === 0) continue;
+
+        var mPlano = line.match(/^PLANO:\s*(.+)$/i);
+        if (mPlano) { meta.name = mPlano[1].trim(); continue; }
+        var mPt = line.match(/^PERSONAL:\s*(.+)$/i);
+        if (mPt) { meta.author = mPt[1].trim(); continue; }
+
+        var mTreino = line.match(/^TREINO\s+([ABCD])\s*:\s*(.+)$/i);
+        if (mTreino) {
+          cur = mTreino[1].toUpperCase();
+          map[cur].nome = mTreino[2].trim();
+          map[cur].color = colors[cur];
+          map[cur].exercises = [];
+          continue;
+        }
+        var mFoco = line.match(/^Foco:\s*(.+)$/i);
+        if (mFoco && cur) { map[cur].foco = mFoco[1].trim(); continue; }
+
+        // exercise line: name | series | reps | rest | tech
+        if (cur && line.indexOf('|') >= 0) {
+          var parts = line.split('|').map(function (p) { return p.trim(); });
+          if (parts[0]) {
+            map[cur].exercises.push({
+              id: cur.toLowerCase() + '_' + (map[cur].exercises.length + 1),
+              nome: parts[0],
+              series: parseInt(parts[1], 10) || 3,
+              reps: parts[2] || '8 a 12',
+              descanso: parseInt(parts[3], 10) || 90,
+              tech: parts[4] || ''
+            });
+          }
+        }
+      }
+      return { map: map, meta: meta };
+    }
+
+    function validateProgramMap(map) {
+      var keys = ['A','B','C','D'];
+      for (var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        if (!map[k] || !map[k].exercises || !map[k].exercises.length) {
+          return 'Treino ' + k + ' está vazio — inclua pelo menos 1 exercício';
+        }
+      }
+      return null;
+    }
+
+    function planoExportText() {
+      planoSyncTreinoHeader();
+      var draft = ensurePlanoDraft();
+      var err = validateProgramMap(draft);
+      if (err) { showToast(err); return; }
+      var meta = {
+        name: (document.getElementById('planoNome').value || '').trim() || 'Plano personalizado',
+        author: (document.getElementById('planoAuthor').value || '').trim()
+      };
+      var text = programToText(draft, meta);
+      var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = (meta.name || 'plano-marsb').replace(/[^\w\-]+/g, '_').slice(0, 40) + '.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Arquivo de texto exportado');
+    }
+
+    function planoOnFileChosen(ev) {
+      var file = ev.target.files && ev.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        var raw = e.target.result;
+        try {
+          // Try JSON first (legacy), else text
+          var map, meta;
+          if (String(raw).trim().charAt(0) === '{') {
+            var data = JSON.parse(raw);
+            var errJ = validateProgram(data);
+            if (errJ) throw new Error(errJ);
+            map = normalizeProgram(data);
+            meta = { name: data.name || file.name, author: data.author || '' };
+          } else {
+            var parsed = parseTextProgram(raw);
+            map = parsed.map;
+            meta = parsed.meta;
+            var errT = validateProgramMap(map);
+            if (errT) throw new Error(errT);
+          }
+          state.customProgram = map;
+          state.customProgramMeta = {
+            name: meta.name || file.name.replace(/\.(txt|json)$/i, ''),
+            author: meta.author || '',
+            importedAt: new Date().toISOString()
+          };
+          state.customExercises = { A: [], B: [], C: [], D: [] };
+          planoDraft = cloneProgram(map);
+          saveState();
+          updatePlanoStatus();
+          var pn = document.getElementById('planoNome');
+          var pa = document.getElementById('planoAuthor');
+          if (pn) pn.value = state.customProgramMeta.name || '';
+          if (pa) pa.value = state.customProgramMeta.author || '';
+          planoLoadFieldsFromDraft();
+          if (typeof renderQuickStart === 'function') renderQuickStart();
+          showToast('Plano importado!');
+        } catch (err) {
+          showToast('Não foi possível importar: ' + (err.message || err));
+        }
+        ev.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    // Keep legacy JSON helpers for import compatibility
     function validateProgram(prog) {
       if (!prog || typeof prog !== 'object') return 'JSON inválido';
-      // Accept { treinos: {A...} } or direct { A: {...} }
       var map = prog.treinos || prog;
       var keys = ['A', 'B', 'C', 'D'];
       for (var i = 0; i < keys.length; i++) {
         var k = keys[i];
         if (!map[k]) return 'Falta o treino ' + k;
-        if (!map[k].nome) return 'Treino ' + k + ' sem nome';
         if (!Array.isArray(map[k].exercises) || !map[k].exercises.length) return 'Treino ' + k + ' sem exercícios';
-        for (var j = 0; j < map[k].exercises.length; j++) {
-          var ex = map[k].exercises[j];
-          if (!ex.id || !ex.nome) return 'Exercício inválido no treino ' + k + ' (id/nome)';
-          if (!ex.series || ex.series < 1) return 'Séries inválidas em ' + ex.nome;
-        }
       }
       return null;
     }
@@ -3453,167 +3790,6 @@
       return out;
     }
 
-    function updatePlanoStatus() {
-      var el = document.getElementById('planoStatus');
-      if (!el) return;
-      if (state.customProgram && state.customProgram.A) {
-        var meta = state.customProgramMeta || {};
-        el.className = 'ai-status ok';
-        el.textContent = 'Plano personalizado ativo' +
-          (meta.name ? ' · ' + meta.name : '') +
-          (meta.author ? ' · PT: ' + meta.author : '');
-      } else {
-        el.className = 'ai-status warn';
-        el.textContent = 'Nenhum plano personalizado — usando treino padrão MARSB';
-      }
-    }
-
-    function renderPlanoPreview(map, meta) {
-      var box = document.getElementById('planoPreview');
-      if (!box) return;
-      var html = '';
-      if (meta && (meta.name || meta.author)) {
-        html += '<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">' +
-          (meta.name ? '<strong style="color:var(--text)">' + meta.name + '</strong> ' : '') +
-          (meta.author ? '· PT: ' + meta.author : '') + '</div>';
-      }
-      ['A', 'B', 'C', 'D'].forEach(function (k) {
-        var t = map[k];
-        html += '<div class="menu-meal" style="margin-bottom:8px;">' +
-          '<div class="menu-meal-title">Treino ' + k + ' — ' + t.nome + '</div>' +
-          '<div class="menu-item-sub" style="margin-bottom:6px;">' + (t.foco || '') + ' · ' + t.exercises.length + ' exercícios</div>';
-        t.exercises.forEach(function (ex) {
-          html += '<div class="menu-item">' +
-            '<div><div class="menu-item-name">' + ex.nome + '</div>' +
-            '<div class="menu-item-sub">' + ex.series + '× ' + ex.reps + ' · descanso ' + ex.descanso + 's' +
-            (ex.tech ? ' · ' + ex.tech : '') + '</div></div></div>';
-        });
-        html += '</div>';
-      });
-      box.style.display = 'block';
-      box.innerHTML = html;
-    }
-
-    function importPlanoFile() {
-      var input = document.getElementById('planoFile');
-      if (!input || !input.files || !input.files[0]) {
-        showToast('Selecione um arquivo JSON');
-        return;
-      }
-      var file = input.files[0];
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        try {
-          var data = JSON.parse(e.target.result);
-          var err = validateProgram(data);
-          if (err) {
-            showToast(err);
-            return;
-          }
-          var map = normalizeProgram(data);
-          state.customProgram = map;
-          state.customProgramMeta = {
-            name: data.name || file.name.replace(/\.json$/i, ''),
-            author: data.author || '',
-            importedAt: new Date().toISOString()
-          };
-          // clear exercise overrides that may not match new ids (optional: keep weights by name later)
-          state.customExercises = { A: [], B: [], C: [], D: [] };
-          saveState();
-          updatePlanoStatus();
-          renderPlanoPreview(map, state.customProgramMeta);
-          showToast('Plano importado!');
-          if (typeof renderQuickStart === 'function') renderQuickStart();
-        } catch (err) {
-          showToast('JSON inválido: ' + (err.message || err));
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function buildTemplateProgram() {
-      return {
-        version: 1,
-        name: 'Plano do Personal',
-        author: 'Nome do Personal',
-        treinos: {
-          A: {
-            id: 'A',
-            nome: 'Exemplo — Peito e tríceps',
-            foco: 'Descreva o foco do treino',
-            color: 'blue',
-            exercises: [
-              { id: 'a1', nome: 'Supino reto com barra', series: 4, reps: '6 a 8', descanso: 150, tech: 'RIR 1-2' },
-              { id: 'a2', nome: 'Crucifixo com halteres', series: 3, reps: '10 a 12', descanso: 90, tech: 'Controle na descida' },
-              { id: 'a3', nome: 'Tríceps pulley', series: 3, reps: '12 a 15', descanso: 75, tech: 'Cotovelo fixo' }
-            ]
-          },
-          B: {
-            id: 'B',
-            nome: 'Exemplo — Costas e bíceps',
-            foco: 'Largura e espessura',
-            color: 'green',
-            exercises: [
-              { id: 'b1', nome: 'Puxada alta', series: 4, reps: '8 a 10', descanso: 120, tech: 'Peito para cima' },
-              { id: 'b2', nome: 'Remada curvada', series: 4, reps: '6 a 8', descanso: 120, tech: 'Tronco firme' },
-              { id: 'b3', nome: 'Rosca direta', series: 3, reps: '10 a 12', descanso: 75, tech: 'Sem balanço' }
-            ]
-          },
-          C: {
-            id: 'C',
-            nome: 'Exemplo — Pernas',
-            foco: 'Quadríceps e posterior',
-            color: 'orange',
-            exercises: [
-              { id: 'c1', nome: 'Agachamento livre', series: 4, reps: '6 a 8', descanso: 180, tech: 'Profundidade controlada' },
-              { id: 'c2', nome: 'Leg press', series: 3, reps: '10 a 12', descanso: 120, tech: 'Amplitude completa' },
-              { id: 'c3', nome: 'Mesa flexora', series: 3, reps: '10 a 12', descanso: 90, tech: 'Contração no topo' }
-            ]
-          },
-          D: {
-            id: 'D',
-            nome: 'Exemplo — Ombros e core',
-            foco: 'Deltoides e estabilidade',
-            color: 'purple',
-            exercises: [
-              { id: 'd1', nome: 'Desenvolvimento com halteres', series: 4, reps: '8 a 10', descanso: 120, tech: 'Sem arquear demais' },
-              { id: 'd2', nome: 'Elevação lateral', series: 3, reps: '12 a 15', descanso: 75, tech: 'Leve cotovelo flexionado' },
-              { id: 'd3', nome: 'Prancha', series: 3, reps: '30 a 45s', descanso: 60, tech: 'Core firme' }
-            ]
-          }
-        }
-      };
-    }
-
-    function downloadJson(obj, filename) {
-      var blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function downloadPlanoTemplate() {
-      downloadJson(buildTemplateProgram(), 'marsb-plano-modelo.json');
-      showToast('Modelo baixado');
-    }
-
-    function downloadPlanoAtual() {
-      var map = treinosMap();
-      var payload = {
-        version: 1,
-        name: (state.customProgramMeta && state.customProgramMeta.name) || 'Plano atual MARSB',
-        author: (state.customProgramMeta && state.customProgramMeta.author) || '',
-        treinos: map
-      };
-      downloadJson(payload, 'marsb-plano-atual.json');
-      showToast('Plano exportado');
-    }
-
     function resetPlanoPadrao() {
       if (!state.customProgram) {
         showToast('Já está no treino padrão');
@@ -3622,19 +3798,44 @@
       if (!confirm('Remover o plano personalizado e voltar ao treino padrão MARSB?')) return;
       state.customProgram = null;
       state.customProgramMeta = null;
+      planoDraft = null;
       saveState();
       updatePlanoStatus();
-      var box = document.getElementById('planoPreview');
-      if (box) { box.style.display = 'none'; box.innerHTML = ''; }
+      planoDraft = cloneProgram(treinosMap());
+      var pn = document.getElementById('planoNome');
+      var pa = document.getElementById('planoAuthor');
+      if (pn) pn.value = '';
+      if (pa) pa.value = '';
+      planoLoadFieldsFromDraft();
       if (typeof renderQuickStart === 'function') renderQuickStart();
       showToast('Treino padrão restaurado');
     }
 
     function initPlanoPage() {
       updatePlanoStatus();
-      if (state.customProgram && state.customProgram.A) {
-        renderPlanoPreview(state.customProgram, state.customProgramMeta);
+      if (!planoDraft) {
+        planoDraft = cloneProgram(treinosMap());
       }
+      if (typeof bindSeg === 'function') {
+        bindSeg('planoEditKey', 'data-key');
+        // re-bind click to reload fields when switching A/B/C/D
+        var seg = document.getElementById('planoEditKey');
+        if (seg && !seg._planoBound) {
+          seg._planoBound = true;
+          seg.querySelectorAll('button').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+              planoSyncTreinoHeader();
+              setTimeout(planoLoadFieldsFromDraft, 0);
+            });
+          });
+        }
+      }
+      var meta = state.customProgramMeta || {};
+      var pn = document.getElementById('planoNome');
+      var pa = document.getElementById('planoAuthor');
+      if (pn) pn.value = meta.name || pn.value || '';
+      if (pa) pa.value = meta.author || pa.value || '';
+      planoLoadFieldsFromDraft();
     }
 
     // ===================== DAILY MENU (3 MEALS, TACO) =====================
