@@ -1,7 +1,7 @@
 {
   "name": "MARSB-GYM",
   "short_name": "MARSB-GYM",
-  "description": "MARSB-GYM - Plano de Hipertrofia Avançado",
+  "description": "MARSB-GYM - Plano de Academia",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
