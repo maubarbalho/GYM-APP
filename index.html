@@ -267,6 +267,9 @@
       width: 100%; max-width: 640px;
     }
 
+    .bottom-nav-inner { gap: 0; }
+    .nav-item { font-size: 0.62rem; padding: 6px 2px; }
+    .nav-item .nav-icon { font-size: 1.05rem; }
     .nav-item {
       display: flex; flex-direction: column; align-items: center; gap: 2px;
       background: none; border: none; color: var(--text-muted);
@@ -1120,28 +1123,7 @@
         <button class="btn-action primary" onclick="runFoodCalc()">Gerar porções</button>
         <div id="foodResult" class="calc-result" style="display:none;"></div>
       </div>
-
-
-      <div class="calc-card">
-        <h3>🍽 Cardápio do dia (3 refeições)</h3>
-        <p class="calc-desc">Monta café, almoço e jantar com alimentos da <strong>Tabela TACO</strong>, dividindo as calorias e os macros do dia.</p>
-        <div class="form-field">
-          <label>Peso corporal (kg) — se vazio, usa o da calculadora acima</label>
-          <input type="number" id="menuWeight" inputmode="decimal" placeholder="80" step="0.1" />
-        </div>
-        <div class="form-field">
-          <label>Estilo do cardápio</label>
-          <div class="seg-control" id="menuStyle">
-            <button type="button" class="active" data-style="padrao">Padrão</button>
-            <button type="button" data-style="whey">Com whey</button>
-            <button type="button" data-style="simples">Simples</button>
-          </div>
-        </div>
-        <button class="btn-action primary" onclick="runMenuCalc()">Gerar cardápio</button>
-        <div id="menuResult" class="calc-result" style="display:none;"></div>
-      </div>
-
-      <div class="section-title">Treino</div>
+<div class="section-title">Treino</div>
 
       <div class="calc-card">
         <h3>⚖️ Calculadora de anilhas</h3>
@@ -1188,7 +1170,35 @@
     </div>
 
     <!-- SOBRE -->
-    <div class="page" id="page-sobre">
+      <div class="page" id="page-dieta">
+    <div class="content">
+      <div class="section-title">Cardápio</div>
+      <div class="calc-card">
+        <h3>🍽 Cardápio do dia (3 refeições)</h3>
+        <p class="calc-desc">Monta café, almoço e jantar com a <strong>Tabela TACO</strong> e ajusta as porções para a meta diária de macros e calorias.</p>
+        <div class="form-field">
+          <label>Peso corporal (kg)</label>
+          <input type="number" id="menuWeight" inputmode="decimal" placeholder="Ex: 80" step="0.1" />
+        </div>
+        <div class="form-field">
+          <label>Estilo do cardápio</label>
+          <div class="seg-control" id="menuStyle">
+            <button type="button" class="active" data-style="padrao">Padrão</button>
+            <button type="button" data-style="whey">Com whey</button>
+            <button type="button" data-style="simples">Simples</button>
+          </div>
+        </div>
+        <button class="btn-action primary" onclick="runMenuCalc()">Gerar cardápio</button>
+        <div id="menuResult" class="calc-result" style="display:none;"></div>
+      </div>
+      <div class="calc-card" style="margin-top:12px;">
+        <h3>Como funciona</h3>
+        <p class="calc-desc" style="margin:0;">Meta: <strong>2 g/kg</strong> prot · <strong>4,5 g/kg</strong> carbo · <strong>0,8 g/kg</strong> gord. Porções recalculadas para aproximar os totais. Fonte TACO (exceto whey).</p>
+      </div>
+    </div>
+  </div>
+
+<div class="page" id="page-sobre">
       <div class="about-section">
         <h3>Estrutura do Programa</h3>
         <p>Divisão ABCD que isola membros superiores focados em força/massa nos treinos A e B, dedica o treino C às pernas completas e o treino D ao estresse metabólico direto para ombros e braços. O core é trabalhado em todas as sessões com funções complementares.</p>
@@ -1224,6 +1234,7 @@
       <button class="nav-item" data-page="treinos"><span class="nav-icon">💪</span><span>Treinos</span></button>
       <button class="nav-item" data-page="progresso"><span class="nav-icon">📊</span><span>Prog.</span></button>
       <button class="nav-item" data-page="calc"><span class="nav-icon">🧮</span><span>Calc</span></button>
+      <button class="nav-item" data-page="dieta"><span class="nav-icon">🍽</span><span>Dieta</span></button>
       <button class="nav-item" data-page="ai"><span class="nav-icon">🤖</span><span>Coach</span></button>
       <button class="nav-item" data-page="sobre"><span class="nav-icon">ℹ️</span><span>Sobre</span></button>
     </div>
@@ -2336,6 +2347,15 @@
       if (page === 'calc') {
         initCalcPage();
       }
+      if (page === 'dieta') {
+        if (typeof bindSeg === 'function') bindSeg('menuStyle', 'data-style');
+        // prefill weight from body log if empty
+        const mw = document.getElementById('menuWeight');
+        if (mw && !mw.value && typeof getBodyWeightsSorted === 'function') {
+          const sorted = getBodyWeightsSorted();
+          if (sorted.length) mw.value = sorted[sorted.length - 1].kg;
+        }
+      }
       if (page === 'ai') {
         initAiPage();
       }
@@ -3287,10 +3307,16 @@
     // ===================== DAILY MENU (3 MEALS, TACO) =====================
     function runMenuCalc() {
       let weight = parseFloat(document.getElementById('menuWeight').value);
-      if (!weight) weight = parseFloat(document.getElementById('foodWeight').value);
-      if (!weight) weight = parseFloat(document.getElementById('calcWeight').value);
       if (!weight) {
-        const sorted = (typeof getBodyWeightsSorted === 'function') ? getBodyWeightsSorted() : [];
+        const fw = document.getElementById('foodWeight');
+        if (fw) weight = parseFloat(fw.value);
+      }
+      if (!weight) {
+        const cw = document.getElementById('calcWeight');
+        if (cw) weight = parseFloat(cw.value);
+      }
+      if (!weight && typeof getBodyWeightsSorted === 'function') {
+        const sorted = getBodyWeightsSorted();
         if (sorted.length) weight = sorted[sorted.length - 1].kg;
       }
       if (!weight || weight < 30) {
@@ -3301,13 +3327,11 @@
       const styleBtn = document.querySelector('#menuStyle button.active');
       const style = styleBtn ? styleBtn.getAttribute('data-style') : 'padrao';
 
-      // TACO per 100g
       const T = {
         aveia:   { n: 'Aveia em flocos (seca)', p: 13.9, c: 66.6, f: 8.5, k: 394 },
         ovo:     { n: 'Ovo cozido', p: 13.3, c: 0.6, f: 9.5, k: 146 },
         banana:  { n: 'Banana-prata', p: 1.3, c: 26.0, f: 0.1, k: 98 },
         pao:     { n: 'Pão francês', p: 8.0, c: 58.6, f: 3.1, k: 300 },
-        iogurte: { n: 'Iogurte natural', p: 4.1, c: 1.9, f: 3.0, k: 51 },
         frango:  { n: 'Frango peito cozido', p: 31.5, c: 0, f: 3.2, k: 163 },
         arroz:   { n: 'Arroz branco cozido', p: 2.5, c: 28.1, f: 0.2, k: 128 },
         feijao:  { n: 'Feijão preto cozido', p: 4.5, c: 14.0, f: 0.5, k: 77 },
@@ -3315,142 +3339,218 @@
         patinho: { n: 'Patinho grelhado', p: 35.9, c: 0, f: 7.3, k: 219 },
         azeite:  { n: 'Azeite de oliva', p: 0, c: 0, f: 100, k: 884 },
         amendoim:{ n: 'Amendoim torrado', p: 22.5, c: 18.7, f: 54, k: 606 },
-        abacate: { n: 'Abacate', p: 1.2, c: 6.0, f: 8.4, k: 96 }
+        abacate: { n: 'Abacate', p: 1.2, c: 6.0, f: 8.4, k: 96 },
+        legumes: { n: 'Legumes/verduras', p: 1.5, c: 5, f: 0.2, k: 30 }
       };
       const WHEY = { n: 'Whey protein (pó)', p: 80, c: 8, f: 5, k: 400 };
 
-      // Daily targets (same logic as portion calculator)
-      const protT = Math.round(weight * 2.0);
-      const carbT = Math.round(weight * 4.5);
-      const fatT = Math.round(weight * 0.8);
+      const protT = weight * 2.0;
+      const carbT = weight * 4.5;
+      const fatT = weight * 0.8;
       const kcalT = protT * 4 + carbT * 4 + fatT * 9;
 
-      // Meal calorie shares
       const shares = [
         { id: 'cafe', name: 'Café da manhã', pct: 0.28 },
         { id: 'almoco', name: 'Almoço', pct: 0.40 },
         { id: 'jantar', name: 'Jantar', pct: 0.32 }
       ];
 
-      function gFor(food, key, target) {
-        const d = food[key] / 100;
-        return d > 0 ? Math.max(0, Math.round(target / d)) : 0;
-      }
       function macrosOf(food, g) {
-        return {
-          p: g * food.p / 100,
-          c: g * food.c / 100,
-          f: g * food.f / 100,
-          k: g * food.k / 100
-        };
-      }
-      function sumItems(items) {
-        return items.reduce((acc, it) => {
-          const m = macrosOf(it.food, it.g);
-          acc.p += m.p; acc.c += m.c; acc.f += m.f; acc.k += m.k;
-          return acc;
-        }, { p: 0, c: 0, f: 0, k: 0 });
+        return { p: g * food.p / 100, c: g * food.c / 100, f: g * food.f / 100, k: g * food.k / 100 };
       }
       function roundFood(g) {
-        // practical kitchen rounding
+        if (g <= 0) return 0;
         if (g >= 100) return Math.round(g / 5) * 5;
-        if (g >= 30) return Math.round(g / 5) * 5;
-        return Math.round(g);
+        if (g >= 20) return Math.round(g / 5) * 5;
+        return Math.max(1, Math.round(g));
       }
 
-      // Build meals with target macros per meal
-      function buildMeal(share, kind) {
-        const pTarget = protT * share.pct;
-        const cTarget = carbT * share.pct;
-        const fTarget = fatT * share.pct;
+      function templatesFor(style) {
+        if (style === 'whey') {
+          return {
+            cafe: [
+              { food: WHEY, role: 'p', w: 1 },
+              { food: T.aveia, role: 'c', w: 0.70 },
+              { food: T.banana, role: 'c', w: 0.30 },
+              { food: T.amendoim, role: 'f', w: 1 }
+            ],
+            almoco: [
+              { food: T.frango, role: 'p', w: 1 },
+              { food: T.arroz, role: 'c', w: 0.72 },
+              { food: T.feijao, role: 'c', w: 0.28 },
+              { food: T.azeite, role: 'f', w: 1 },
+              { food: T.legumes, role: 'v', w: 1 }
+            ],
+            jantar: [
+              { food: T.patinho, role: 'p', w: 1 },
+              { food: T.batata, role: 'c', w: 0.80 },
+              { food: T.arroz, role: 'c', w: 0.20 },
+              { food: T.abacate, role: 'f', w: 1 },
+              { food: T.legumes, role: 'v', w: 1 }
+            ]
+          };
+        }
+        if (style === 'simples') {
+          return {
+            cafe: [
+              { food: T.ovo, role: 'p', w: 1 },
+              { food: T.pao, role: 'c', w: 1 },
+              { food: T.azeite, role: 'f', w: 1 }
+            ],
+            almoco: [
+              { food: T.frango, role: 'p', w: 1 },
+              { food: T.arroz, role: 'c', w: 0.75 },
+              { food: T.feijao, role: 'c', w: 0.25 },
+              { food: T.azeite, role: 'f', w: 1 },
+              { food: T.legumes, role: 'v', w: 1 }
+            ],
+            jantar: [
+              { food: T.frango, role: 'p', w: 1 },
+              { food: T.batata, role: 'c', w: 1 },
+              { food: T.azeite, role: 'f', w: 1 },
+              { food: T.legumes, role: 'v', w: 1 }
+            ]
+          };
+        }
+        return {
+          cafe: [
+            { food: T.ovo, role: 'p', w: 1 },
+            { food: T.aveia, role: 'c', w: 0.65 },
+            { food: T.banana, role: 'c', w: 0.35 },
+            { food: T.amendoim, role: 'f', w: 1 }
+          ],
+          almoco: [
+            { food: T.frango, role: 'p', w: 1 },
+            { food: T.arroz, role: 'c', w: 0.70 },
+            { food: T.feijao, role: 'c', w: 0.30 },
+            { food: T.azeite, role: 'f', w: 1 },
+            { food: T.legumes, role: 'v', w: 1 }
+          ],
+          jantar: [
+            { food: T.patinho, role: 'p', w: 1 },
+            { food: T.batata, role: 'c', w: 0.75 },
+            { food: T.arroz, role: 'c', w: 0.25 },
+            { food: T.abacate, role: 'f', w: 1 },
+            { food: T.legumes, role: 'v', w: 1 }
+          ]
+        };
+      }
+
+      const tpl = templatesFor(style);
+
+      function buildRawMeal(share, itemsTpl) {
+        const pNeed = protT * share.pct;
+        const cNeed = carbT * share.pct;
+        const fNeed = fatT * share.pct;
         const items = [];
 
-        if (kind === 'cafe') {
-          if (style === 'whey') {
-            // whey + aveia + banana + azeite/amendoim
-            const wheyG = roundFood(gFor(WHEY, 'p', pTarget * 0.70));
-            const ovoN = 0;
-            const aveiaG = roundFood(gFor(T.aveia, 'c', cTarget * 0.70));
-            const bananaG = roundFood(gFor(T.banana, 'c', cTarget * 0.30));
-            let fatNeed = fTarget - macrosOf(WHEY, wheyG).f - macrosOf(T.aveia, aveiaG).f;
-            const amendoimG = roundFood(Math.max(0, gFor(T.amendoim, 'f', Math.max(fatNeed, fTarget * 0.5))));
-            items.push({ food: WHEY, g: wheyG, note: Math.max(1, Math.round(wheyG / 30)) + ' dose(s)' });
-            items.push({ food: T.aveia, g: aveiaG, note: 'peso seco' });
-            items.push({ food: T.banana, g: bananaG, note: '' });
-            if (amendoimG >= 10) items.push({ food: T.amendoim, g: amendoimG, note: '' });
-          } else if (style === 'simples') {
-            const paoG = roundFood(gFor(T.pao, 'c', cTarget * 0.75));
-            const ovoG = roundFood(gFor(T.ovo, 'p', pTarget));
-            let fatNeed = fTarget - macrosOf(T.ovo, ovoG).f;
-            const azeiteG = roundFood(Math.max(5, gFor(T.azeite, 'f', Math.max(fatNeed, fTarget * 0.6))));
-            items.push({ food: T.pao, g: paoG, note: '' });
-            items.push({ food: T.ovo, g: ovoG, note: '≈ ' + Math.max(1, Math.round(ovoG / 50)) + ' ovo(s)' });
-            items.push({ food: T.azeite, g: azeiteG, note: 'ml ≈ g' });
-          } else {
-            // padrão: ovos + aveia + banana + amendoim
-            const ovoG = roundFood(gFor(T.ovo, 'p', pTarget * 0.75));
-            const aveiaG = roundFood(gFor(T.aveia, 'c', cTarget * 0.65));
-            const bananaG = roundFood(gFor(T.banana, 'c', cTarget * 0.35));
-            let fatNeed = fTarget - macrosOf(T.ovo, ovoG).f - macrosOf(T.aveia, aveiaG).f;
-            const amendoimG = roundFood(Math.max(10, gFor(T.amendoim, 'f', Math.max(fatNeed, fTarget * 0.5))));
-            items.push({ food: T.ovo, g: ovoG, note: '≈ ' + Math.max(1, Math.round(ovoG / 50)) + ' ovo(s)' });
-            items.push({ food: T.aveia, g: aveiaG, note: 'peso seco' });
-            items.push({ food: T.banana, g: bananaG, note: '' });
-            items.push({ food: T.amendoim, g: amendoimG, note: '' });
-          }
-        } else if (kind === 'almoco') {
-          // frango + arroz + feijão + azeite (+ legumes implied)
-          const frangoG = roundFood(gFor(T.frango, 'p', pTarget * 0.90));
-          const arrozG = roundFood(gFor(T.arroz, 'c', cTarget * 0.70));
-          const feijaoG = roundFood(gFor(T.feijao, 'c', cTarget * 0.25));
-          let fatNeed = fTarget - macrosOf(T.frango, frangoG).f;
-          const azeiteG = roundFood(Math.max(5, gFor(T.azeite, 'f', Math.max(fatNeed, fTarget * 0.7))));
-          const legumesG = roundFood(weight * 2); // volume
-          items.push({ food: T.frango, g: frangoG, note: '' });
-          items.push({ food: T.arroz, g: arrozG, note: 'cozido' });
-          items.push({ food: T.feijao, g: feijaoG, note: 'cozido' });
-          items.push({ food: T.azeite, g: azeiteG, note: 'ml ≈ g' });
-          items.push({ food: { n: 'Legumes/verduras', p: 1.5, c: 5, f: 0.2, k: 30 }, g: legumesG, note: 'variados' });
-        } else {
-          // jantar
-          if (style === 'simples') {
-            const frangoG = roundFood(gFor(T.frango, 'p', pTarget * 0.90));
-            const batataG = roundFood(gFor(T.batata, 'c', cTarget * 0.90));
-            let fatNeed = fTarget - macrosOf(T.frango, frangoG).f;
-            const azeiteG = roundFood(Math.max(5, gFor(T.azeite, 'f', Math.max(fatNeed, fTarget * 0.7))));
-            items.push({ food: T.frango, g: frangoG, note: '' });
-            items.push({ food: T.batata, g: batataG, note: 'cozida' });
-            items.push({ food: T.azeite, g: azeiteG, note: 'ml ≈ g' });
-          } else {
-            const carneG = roundFood(gFor(T.patinho, 'p', pTarget * 0.85));
-            const batataG = roundFood(gFor(T.batata, 'c', cTarget * 0.75));
-            const arrozG = roundFood(gFor(T.arroz, 'c', cTarget * 0.20));
-            let fatNeed = fTarget - macrosOf(T.patinho, carneG).f;
-            // prefer abacate at dinner for variety
-            const abacateG = roundFood(Math.max(40, gFor(T.abacate, 'f', Math.max(fatNeed, fTarget * 0.7))));
-            const legumesG = roundFood(weight * 1.5);
-            items.push({ food: T.patinho, g: carneG, note: '' });
-            items.push({ food: T.batata, g: batataG, note: 'cozida' });
-            if (arrozG >= 40) items.push({ food: T.arroz, g: arrozG, note: 'cozido' });
-            items.push({ food: T.abacate, g: abacateG, note: '' });
-            items.push({ food: { n: 'Legumes/verduras', p: 1.5, c: 5, f: 0.2, k: 30 }, g: legumesG, note: 'variados' });
-          }
-        }
+        const pFoods = itemsTpl.filter(x => x.role === 'p');
+        const pW = pFoods.reduce((s, x) => s + x.w, 0) || 1;
+        pFoods.forEach(x => {
+          const need = pNeed * (x.w / pW);
+          const dens = x.food.p / 100;
+          items.push({ food: x.food, g: dens > 0 ? need / dens : 0, role: 'p', note: '' });
+        });
 
-        const totals = sumItems(items);
-        return { share: share, items: items, totals: totals };
+        const cFoods = itemsTpl.filter(x => x.role === 'c');
+        const cW = cFoods.reduce((s, x) => s + x.w, 0) || 1;
+        cFoods.forEach(x => {
+          const need = cNeed * (x.w / cW);
+          const dens = x.food.c / 100;
+          items.push({ food: x.food, g: dens > 0 ? need / dens : 0, role: 'c', note: '' });
+        });
+
+        let fatFromPC = 0;
+        items.forEach(it => { fatFromPC += macrosOf(it.food, it.g).f; });
+        const fatRemain = Math.max(0, fNeed - fatFromPC);
+        const fFoods = itemsTpl.filter(x => x.role === 'f');
+        const fW = fFoods.reduce((s, x) => s + x.w, 0) || 1;
+        fFoods.forEach(x => {
+          const need = fatRemain * (x.w / fW);
+          const dens = x.food.f / 100;
+          items.push({ food: x.food, g: dens > 0 ? need / dens : 0, role: 'f', note: '' });
+        });
+
+        itemsTpl.filter(x => x.role === 'v').forEach(x => {
+          items.push({ food: x.food, g: weight * 1.8 * (share.pct / 0.35), role: 'v', note: 'variados' });
+        });
+
+        return items;
       }
 
-      const meals = [
-        buildMeal(shares[0], 'cafe'),
-        buildMeal(shares[1], 'almoco'),
-        buildMeal(shares[2], 'jantar')
-      ];
+      let meals = shares.map(sh => ({ share: sh, items: buildRawMeal(sh, tpl[sh.id]) }));
 
-      const day = meals.reduce((acc, m) => {
-        acc.p += m.totals.p; acc.c += m.totals.c; acc.f += m.totals.f; acc.k += m.totals.k;
-        return acc;
-      }, { p: 0, c: 0, f: 0, k: 0 });
+      function dayTotals(mealsArr) {
+        const t = { p: 0, c: 0, f: 0, k: 0 };
+        mealsArr.forEach(m => m.items.forEach(it => {
+          const mm = macrosOf(it.food, it.g);
+          t.p += mm.p; t.c += mm.c; t.f += mm.f; t.k += mm.k;
+        }));
+        return t;
+      }
+
+      let tot = dayTotals(meals);
+      if (tot.p > 1) {
+        const sp = protT / tot.p;
+        meals.forEach(m => m.items.forEach(it => { if (it.role === 'p') it.g *= sp; }));
+      }
+      tot = dayTotals(meals);
+      if (tot.c > 1) {
+        const sc = carbT / tot.c;
+        meals.forEach(m => m.items.forEach(it => { if (it.role === 'c') it.g *= sc; }));
+      }
+      tot = dayTotals(meals);
+      let fatFromF = 0;
+      meals.forEach(m => m.items.forEach(it => { if (it.role === 'f') fatFromF += macrosOf(it.food, it.g).f; }));
+      const fatFromOther = tot.f - fatFromF;
+      const fatNeedFromF = Math.max(0, fatT - fatFromOther);
+      if (fatFromF > 1 && fatNeedFromF > 0) {
+        const sf = fatNeedFromF / fatFromF;
+        meals.forEach(m => m.items.forEach(it => { if (it.role === 'f') it.g *= sf; }));
+      }
+
+      meals.forEach(m => m.items.forEach(it => {
+        it.g = roundFood(it.g);
+        if (it.food === WHEY) {
+          it.g = Math.max(15, Math.round(it.g / 15) * 15);
+          it.note = Math.max(1, Math.round(it.g / 30)) + ' dose(s)';
+        }
+        if (it.food === T.ovo) {
+          const n = Math.max(1, Math.round(it.g / 50));
+          it.g = n * 50;
+          it.note = n + ' ovo(s)';
+        }
+        if (it.food === T.azeite && it.g > 0) it.note = 'ml ≈ g';
+        if (it.food === T.aveia) it.note = 'peso seco';
+        if ((it.food === T.arroz || it.food === T.feijao || it.food === T.batata) && !it.note) it.note = 'cozido';
+      }));
+      meals.forEach(m => { m.items = m.items.filter(it => it.g >= 5); });
+
+      tot = dayTotals(meals);
+      if (Math.abs(protT - tot.p) > 6) {
+        const mainP = meals[1].items.find(it => it.role === 'p');
+        if (mainP) mainP.g = roundFood(mainP.g + (protT - tot.p) / (mainP.food.p / 100));
+      }
+      tot = dayTotals(meals);
+      if (Math.abs(carbT - tot.c) > 10) {
+        const mainC = meals[1].items.find(it => it.food === T.arroz) || meals[1].items.find(it => it.role === 'c');
+        if (mainC) mainC.g = roundFood(mainC.g + (carbT - tot.c) / (mainC.food.c / 100));
+      }
+      tot = dayTotals(meals);
+      if (Math.abs(fatT - tot.f) > 4) {
+        let oil = meals[1].items.find(it => it.food === T.azeite);
+        if (!oil) { oil = { food: T.azeite, g: 0, role: 'f', note: 'ml ≈ g' }; meals[1].items.push(oil); }
+        oil.g = roundFood(Math.max(5, oil.g + (fatT - tot.f)));
+      }
+
+      tot = dayTotals(meals);
+      meals.forEach(m => {
+        m.totals = { p: 0, c: 0, f: 0, k: 0 };
+        m.items.forEach(it => {
+          const mm = macrosOf(it.food, it.g);
+          m.totals.p += mm.p; m.totals.c += mm.c; m.totals.f += mm.f; m.totals.k += mm.k;
+        });
+      });
 
       function mealHtml(meal) {
         const t = meal.totals;
@@ -3482,30 +3582,33 @@
       }
 
       const styleLabel = style === 'whey' ? 'Com whey' : (style === 'simples' ? 'Simples' : 'Padrão');
+      function errLabel(v, unit) {
+        const r = Math.round(v);
+        if (Math.abs(r) <= 2) return 'na meta';
+        return (r > 0 ? '+' : '') + r + (unit ? ' ' + unit : '');
+      }
+
       const box = document.getElementById('menuResult');
       box.style.display = 'block';
       box.innerHTML =
         '<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;line-height:1.45;">' +
           'Peso <strong style="color:var(--text)">' + weight + ' kg</strong> · estilo <strong style="color:var(--text)">' + styleLabel + '</strong><br>' +
-          'Meta do dia: <strong style="color:var(--accent)">' + protT + 'g</strong> prot · ' +
-          carbT + 'g carbo · ' + fatT + 'g gord · ~' + kcalT + ' kcal' +
+          'Meta: <strong style="color:var(--accent)">' + Math.round(protT) + 'g</strong> prot · ' +
+          Math.round(carbT) + 'g carbo · ' + Math.round(fatT) + 'g gord · ~' + Math.round(kcalT) + ' kcal' +
         '</div>' +
         meals.map(mealHtml).join('') +
         '<div class="menu-day-total">' +
-          '<div class="calc-metric highlight"><div class="val">' + Math.round(day.k) + '</div><div class="lbl">kcal do cardápio</div></div>' +
-          '<div class="calc-metric"><div class="val">' + Math.round(day.p) + ' g</div><div class="lbl">Proteína</div></div>' +
-          '<div class="calc-metric"><div class="val">' + Math.round(day.c) + ' g</div><div class="lbl">Carboidrato</div></div>' +
-          '<div class="calc-metric"><div class="val">' + Math.round(day.f) + ' g</div><div class="lbl">Gordura</div></div>' +
+          '<div class="calc-metric highlight"><div class="val">' + Math.round(tot.k) + '</div><div class="lbl">kcal (' + errLabel(tot.k - kcalT, '') + ')</div></div>' +
+          '<div class="calc-metric"><div class="val">' + Math.round(tot.p) + ' g</div><div class="lbl">Prot (' + errLabel(tot.p - protT, 'g') + ')</div></div>' +
+          '<div class="calc-metric"><div class="val">' + Math.round(tot.c) + ' g</div><div class="lbl">Carbo (' + errLabel(tot.c - carbT, 'g') + ')</div></div>' +
+          '<div class="calc-metric"><div class="val">' + Math.round(tot.f) + ' g</div><div class="lbl">Gord (' + errLabel(tot.f - fatT, 'g') + ')</div></div>' +
         '</div>' +
         '<p class="calc-hint">' +
-          'Distribuição: café 28% · almoço 40% · jantar 32% das calorias do dia. ' +
-          'Alimentos com base na <strong>Tabela TACO</strong> (NEPA/UNICAMP), exceto whey (ref. comercial). ' +
-          'Ajuste ao apetite e à rotina; não substitui nutricionista.' +
+          'Porções ajustadas para ficar perto da meta diária. Fonte: <strong>Tabela TACO</strong> (NEPA/UNICAMP); whey é referência comercial. Não substitui nutricionista.' +
         '</p>';
 
-      // sync weight field
       const mw = document.getElementById('menuWeight');
-      if (mw && !mw.value) mw.value = weight;
+      if (mw && !mw.value) mw.value = String(weight);
     }
 
     // ===================== PLATE CALCULATOR =====================
@@ -3777,7 +3880,6 @@
       bindSeg('calcGoal', 'data-goal');
       bindSeg('plateBar', 'data-bar');
       bindSeg('progPct', 'data-pct');
-      bindSeg('menuStyle', 'data-style');
       try {
         const saved = JSON.parse(localStorage.getItem('marsb_calc_macros') || 'null');
         if (saved) {
