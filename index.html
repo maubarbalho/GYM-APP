@@ -2,13 +2,15 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MARSB-GYM" />
   <meta name="theme-color" content="#0a0e17" />
-  <meta name="description" content="Plano de Treino MARSB-GYM" />
+  <meta name="description" content="Plano de treino MARSB-GYM para acompanhamento de hipertrofia, progresso e hábitos." />
   <meta name="format-detection" content="telephone=no" />
   <title>MARSB-GYM</title>
   <link rel="manifest" href="manifest.json" />
@@ -35,6 +37,28 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    :focus-visible {
+      outline: 3px solid var(--cyan);
+      outline-offset: 3px;
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { touch-action: manipulation; }
+    button:not(:disabled) { transition: transform 0.16s ease-out, filter 0.16s ease-out, border-color 0.16s ease-out; }
+    button:not(:disabled):active { transform: scale(0.97); }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+
+    .network-banner {
+      display: none; margin: 8px 16px 0; padding: 8px 10px; border-radius: 9px;
+      background: rgba(245,158,11,0.14); border: 1px solid rgba(245,158,11,0.35);
+      color: var(--warning); font-size: 0.72rem; line-height: 1.35; text-align: center;
+    }
+    .network-banner.show { display: block; }
 
     html, body {
       height: 100%;
@@ -414,6 +438,8 @@
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
     }
     .guided-start-btn:active { background: var(--accent-dim); }
+    .card-header .guided-start-btn { width:100%; margin-top:10px; padding:9px 10px; }
+    .card-header .guided-start-btn:focus-visible { outline:3px solid rgba(59,130,246,0.45); outline-offset:2px; }
 
     /* ===== Generic modal ===== */
     .modal-overlay {
@@ -485,6 +511,64 @@
     .guided-complete-banner .big-emoji { font-size: 3.5rem; margin-bottom: 12px; }
     .guided-complete-banner h2 { font-size: 1.3rem; margin-bottom: 8px; }
     .guided-complete-banner p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
+
+    /* ===== Guided mode: activity-first layout ===== */
+    .guided-header-copy { display:flex; flex-direction:column; gap:2px; min-width:0; }
+    .guided-kicker { color:var(--text-muted); font-size:0.66rem; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; }
+    .guided-progress-label { color:var(--text); font-size:0.82rem; }
+    .guided-session-footer {
+      flex:0 0 auto; padding:10px 18px calc(12px + var(--safe-bottom));
+      background:rgba(10,14,23,0.96); border-top:1px solid var(--border);
+    }
+    .guided-session-meta { display:flex; align-items:center; justify-content:space-between; gap:12px; color:var(--text-muted); font-size:0.75rem; margin-bottom:9px; }
+    .guided-session-meta strong { color:var(--text); font-size:0.84rem; }
+    .guided-segment-track { display:grid; grid-template-columns:repeat(12, minmax(0, 1fr)); gap:5px; }
+    .guided-segment { height:6px; border-radius:999px; background:var(--border); transition:background 180ms var(--ease-out, ease-out), transform 180ms var(--ease-out, ease-out); }
+    .guided-segment.done { background:var(--accent); }
+    .guided-segment.active { background:var(--primary); transform:scaleY(1.35); }
+    .guided-workout-shell { max-width:620px; margin:0 auto; }
+    .guided-activity-chip { width:max-content; margin:0 auto 12px; padding:7px 16px; border-radius:999px; background:var(--bg-elevated); color:var(--text); font-size:0.72rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; }
+    .guided-activity-card { background:var(--bg-card); border:1px solid var(--border); border-radius:24px; padding:14px; box-shadow:0 12px 34px rgba(0,0,0,0.22); }
+    .guided-media-card { display:grid; grid-template-columns:130px 1fr; gap:14px; align-items:center; margin-bottom:14px; }
+    .guided-media-visual { min-height:138px; border-radius:18px; display:grid; place-items:center; position:relative; overflow:hidden; background:radial-gradient(circle at 52% 38%, rgba(34,197,94,0.26), transparent 34%), linear-gradient(145deg, #252d38, #090c12 72%); border:1px solid #374151; }
+    .guided-media-visual::after { content:''; position:absolute; inset:14px; border:1px solid rgba(255,255,255,0.14); border-radius:50%; transform:rotate(-20deg) scaleX(1.2); }
+    .guided-art-mark { position:relative; z-index:1; width:66px; height:66px; display:grid; place-items:center; border:3px solid var(--text); border-radius:50%; color:var(--accent); font-size:2rem; font-weight:900; box-shadow:0 0 0 8px rgba(255,255,255,0.05); }
+    .guided-media-copy { min-width:0; }
+    .guided-muscle-label { color:var(--text-muted); font-size:0.76rem; margin-bottom:5px; }
+    .guided-ex-name { font-size:clamp(1.28rem, 5vw, 1.8rem); line-height:1.1; margin-bottom:10px; }
+    .guided-video-btn { width:100%; background:transparent; color:var(--text); border:1px solid #64748b; border-radius:16px; padding:10px 12px; font-size:0.84rem; font-weight:700; cursor:pointer; }
+    .guided-video-btn:hover, .guided-video-btn:focus-visible { border-color:var(--primary); color:var(--primary); }
+    .guided-record { display:inline-flex; align-items:center; gap:6px; width:max-content; max-width:100%; margin:0 0 15px; padding:7px 11px; border-radius:999px; background:#f5ec43; color:#171717; font-size:0.76rem; font-weight:800; }
+    .guided-record.empty { background:var(--bg-elevated); color:var(--text-muted); }
+    .guided-section-label { color:var(--text-muted); font-size:0.83rem; text-align:center; margin:5px 0 10px; }
+    .guided-metric-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:12px; text-align:center; }
+    .guided-metric { color:var(--text-muted); font-size:0.67rem; text-transform:uppercase; letter-spacing:0.06em; }
+    .guided-metric strong { display:block; color:var(--text); font-size:0.94rem; margin-top:4px; letter-spacing:0; text-transform:none; }
+    .guided-load-row { display:flex; align-items:center; justify-content:center; gap:8px; margin:5px 0 12px; }
+    .guided-load-label { color:var(--text-muted); font-size:0.8rem; }
+    .guided-load-input { width:108px; text-align:center; background:var(--bg); border:1px solid #64748b; border-radius:12px; padding:10px; color:var(--text); font-size:1rem; font-weight:800; }
+    .guided-load-input:focus { border-color:var(--primary); outline:none; box-shadow:0 0 0 3px rgba(59,130,246,0.16); }
+    .guided-set-head, .guided-set-row { display:grid; grid-template-columns:44px 1fr 1fr 42px; align-items:center; gap:8px; }
+    .guided-set-head { padding:0 12px 6px; color:var(--text-muted); font-size:0.66rem; text-transform:uppercase; letter-spacing:0.06em; }
+    .guided-set-row { width:100%; min-height:54px; margin-top:6px; padding:8px 12px; background:var(--bg); color:var(--text); border:1px solid transparent; border-radius:18px; text-align:left; cursor:pointer; }
+    .guided-set-row:hover, .guided-set-row:focus-visible { border-color:var(--primary); }
+    .guided-set-row.done { background:#050807; border-color:rgba(34,197,94,0.34); }
+    .guided-set-number { font-size:0.9rem; font-weight:800; }
+    .guided-set-value { color:var(--text-muted); font-size:0.88rem; }
+    .guided-set-status { justify-self:end; width:27px; height:27px; display:grid; place-items:center; border:3px solid #9ca3af; border-radius:50%; color:transparent; font-size:0.8rem; font-weight:900; }
+    .guided-set-row.done .guided-set-status { border-color:var(--accent); background:var(--accent); color:#052e16; }
+    .guided-history-card { display:flex; align-items:center; gap:10px; margin-top:16px; padding:14px 8px 4px; border-top:1px solid var(--border); }
+    .guided-history-icon { font-size:1.65rem; color:var(--text); }
+    .guided-history-title { display:block; font-size:0.86rem; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; }
+    .guided-history-detail { display:block; margin-top:3px; color:var(--text-muted); font-size:0.72rem; }
+    .guided-nav-row { margin-top:16px; }
+    @media (max-width:430px) {
+      .guided-body { padding:14px 12px 18px; }
+      .guided-activity-card { border-radius:20px; padding:11px; }
+      .guided-media-card { grid-template-columns:112px 1fr; gap:10px; }
+      .guided-media-visual { min-height:122px; }
+      .guided-set-head, .guided-set-row { grid-template-columns:34px 1fr 1fr 34px; gap:5px; padding-left:8px; padding-right:8px; }
+    }
 
     .backup-hidden-input { display: none; }
 
@@ -846,6 +930,15 @@
     .section-title:first-of-type { margin-top: 8px; }
 
     /* ===== Landscape phones: keep bottom nav from eating too much space ===== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
     @media (max-height: 420px) and (orientation: landscape) {
       .timer-display { font-size: 3rem; }
       .timer-actions { gap: 10px; }
@@ -860,7 +953,7 @@
           <h1>MARSB-GYM</h1>
           <div class="subtitle">Hipertrofia Avançada • 4 Semanas</div>
         </div>
-        <div class="week-selector" id="weekSelector">
+        <div class="week-selector" id="weekSelector" role="group" aria-label="Selecionar semana do programa">
           <button class="week-btn active" data-week="1">1</button>
           <button class="week-btn" data-week="2">2</button>
           <button class="week-btn" data-week="3">3</button>
@@ -874,6 +967,7 @@
     </div>
   </div>
   <div class="header-spacer" id="headerSpacer" aria-hidden="true"></div>
+  <div id="networkBanner" class="network-banner" role="status" aria-live="polite"></div>
 
   <div class="main">
     <!-- HOME -->
@@ -1183,7 +1277,7 @@
 
         <div class="form-field">
           <label>Objetivo</label>
-          <div class="seg-control" id="menuGoal">
+          <div class="seg-control" id="menuGoal" role="group" aria-label="Objetivo da dieta">
             <button type="button" class="active" data-goal="hipertrofia">Hipertrofia</button>
             <button type="button" data-goal="deficit">Déficit −400 kcal</button>
           </div>
@@ -1203,14 +1297,14 @@
         </div>
         <div class="form-field">
           <label>Sexo</label>
-          <div class="seg-control" id="menuSex">
+          <div class="seg-control" id="menuSex" role="group" aria-label="Sexo para estimativa">
             <button type="button" class="active" data-sex="M">Masculino</button>
             <button type="button" data-sex="F">Feminino</button>
           </div>
         </div>
         <div class="form-field">
           <label>Nível de atividade</label>
-          <div class="seg-control" id="menuActivity">
+          <div class="seg-control" id="menuActivity" role="group" aria-label="Nível de atividade">
             <button type="button" data-act="1.2">Leve</button>
             <button type="button" class="active" data-act="1.55">Moderado</button>
             <button type="button" data-act="1.725">Alto</button>
@@ -1218,7 +1312,7 @@
         </div>
         <div class="form-field">
           <label>Estilo do cardápio</label>
-          <div class="seg-control" id="menuStyle">
+          <div class="seg-control" id="menuStyle" role="group" aria-label="Estilo do cardápio">
             <button type="button" class="active" data-style="padrao">Padrão</button>
             <button type="button" data-style="whey">Com whey</button>
             <button type="button" data-style="simples">Simples</button>
@@ -1264,7 +1358,7 @@
 
         <div class="form-field">
           <label>Editar treino</label>
-          <div class="seg-control" id="planoEditKey">
+          <div class="seg-control" id="planoEditKey" role="group" aria-label="Treino que será editado">
             <button type="button" class="active" data-key="A">A</button>
             <button type="button" data-key="B">B</button>
             <button type="button" data-key="C">C</button>
@@ -1355,12 +1449,12 @@
         </ul>
       </div>
       <p style="text-align:center;font-size:0.75rem;color:var(--text-muted);margin-top:30px;">
-        MARSB • Todos os direitos reservados
+        MARBS • Todos os direitos reservados
       </p>
     </div>
   </div>
 
-  <nav class="bottom-nav">
+  <nav class="bottom-nav" aria-label="Navegação principal">
     <div class="bottom-nav-inner">
       <button class="nav-item active" data-page="home"><span class="nav-icon">🏠</span><span>Início</span></button>
       <button class="nav-item" data-page="treinos"><span class="nav-icon">💪</span><span>Treinos</span></button>
@@ -1373,7 +1467,7 @@
     </div>
   </nav>
 
-  <div class="timer-overlay" id="timerOverlay">
+  <div class="timer-overlay" id="timerOverlay" role="dialog" aria-modal="true" aria-labelledby="timerLabel">
     <div class="timer-display" id="timerDisplay">01:30</div>
     <div class="timer-label" id="timerLabel">Descanso</div>
     <div class="timer-actions">
@@ -1386,7 +1480,7 @@
   <div class="toast" id="toast"></div>
 
   <!-- MODAL: editar/adicionar exercício -->
-  <div class="modal-overlay" id="exerciseModal">
+  <div class="modal-overlay" id="exerciseModal" role="dialog" aria-modal="true" aria-labelledby="exerciseModalTitle">
     <div class="modal-sheet">
       <button class="modal-close-x" onclick="closeExerciseModal()">✕</button>
       <div class="modal-title" id="exerciseModalTitle">Editar exercício</div>
@@ -1426,7 +1520,7 @@
   </div>
 
   <!-- MODAL: gráfico de evolução -->
-  <div class="modal-overlay" id="chartModal">
+  <div class="modal-overlay" id="chartModal" role="dialog" aria-modal="true" aria-labelledby="chartModalTitle">
     <div class="modal-sheet">
       <button class="modal-close-x" onclick="closeChartModal()">✕</button>
       <div class="modal-title" id="chartModalTitle">Evolução de carga</div>
@@ -1435,10 +1529,10 @@
   </div>
 
   <!-- MODAL: AI settings -->
-  <div class="modal-overlay" id="aiSettingsModal">
+  <div class="modal-overlay" id="aiSettingsModal" role="dialog" aria-modal="true" aria-labelledby="aiSettingsTitle">
     <div class="modal-sheet">
-      <button class="modal-close-x" onclick="closeAiSettings()">✕</button>
-      <div class="modal-title">Configurar Coach IA</div>
+      <button type="button" class="modal-close-x" aria-label="Fechar configurações do Coach IA" onclick="closeAiSettings()">✕</button>
+      <div class="modal-title" id="aiSettingsTitle">Configurar Coach IA</div>
       <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;line-height:1.45;">
         Por padrão o Coach usa <strong>IA grátis (Puter)</strong> — sem API key.
         Na primeira vez o Puter pode pedir login gratuito no navegador (você não paga a conta do app).
@@ -1446,7 +1540,7 @@
 
       <div class="form-field">
         <label>Modo</label>
-        <div class="seg-control" id="aiModeSeg">
+        <div class="seg-control" id="aiModeSeg" role="group" aria-label="Modo do Coach IA">
           <button type="button" class="active" data-mode="free">IA grátis</button>
           <button type="button" data-mode="custom">API própria</button>
         </div>
@@ -1455,7 +1549,7 @@
       <div id="aiFreeOptions">
         <div class="form-field">
           <label>Modelo grátis (Puter)</label>
-          <div class="seg-control" id="aiFreeModelSeg">
+          <div class="seg-control" id="aiFreeModelSeg" role="group" aria-label="Modelo gratuito">
             <button type="button" class="active" data-fmodel="openrouter:auto">Auto</button>
             <button type="button" data-fmodel="openai/gpt-4o-mini">GPT mini</button>
             <button type="button" data-fmodel="google/gemini-2.0-flash">Gemini</button>
@@ -1463,20 +1557,21 @@
           </div>
         </div>
         <p class="calc-hint">Recomendado para uso diário no celular. Se falhar, tente outro modelo ou API própria.</p>
+        <p class="calc-hint">As conversas e o contexto do atleta podem ser enviados ao provedor escolhido. O app mantém a API Key apenas nesta sessão do navegador.</p>
       </div>
 
       <div id="aiCustomOptions" style="display:none;">
         <div class="form-field">
-          <label>Base URL</label>
-          <input type="url" id="aiBaseUrl" placeholder="https://api.x.ai/v1" />
+          <label for="aiBaseUrl">Base URL</label>
+          <input type="url" id="aiBaseUrl" placeholder="https://api.x.ai/v1" autocomplete="url" />
         </div>
         <div class="form-field">
-          <label>API Key</label>
+          <label for="aiApiKey">API Key</label>
           <input type="password" id="aiApiKey" placeholder="xai-... ou sk-..." autocomplete="off" />
         </div>
         <div class="form-field">
-          <label>Modelo</label>
-          <input type="text" id="aiModel" placeholder="grok-3" />
+          <label for="aiModel">Modelo</label>
+          <input type="text" id="aiModel" placeholder="grok-3" autocomplete="off" maxlength="120" />
         </div>
         <div class="form-field">
           <label>Atalhos de provedor</label>
@@ -1498,13 +1593,20 @@
   </div>
 
   <!-- GUIDED MODE OVERLAY -->
-  <div class="guided-overlay" id="guidedOverlay">
+  <div class="guided-overlay" id="guidedOverlay" role="dialog" aria-modal="true" aria-labelledby="guidedTitle" aria-describedby="guidedBody" tabindex="-1">
     <div class="guided-header">
-      <div class="guided-progress-label" id="guidedProgressLabel">Exercício 1/6</div>
-      <button class="guided-exit-btn" onclick="exitGuided()">Sair</button>
+      <div class="guided-header-copy">
+        <div class="guided-kicker">MARSB • Treino guiado</div>
+        <div class="guided-progress-label" id="guidedTitle" aria-live="polite">Exercício 1/6</div>
+      </div>
+      <button type="button" class="guided-exit-btn" aria-label="Sair do treino guiado" onclick="exitGuided()">Sair</button>
     </div>
-    <div class="guided-progress-bar"><div class="guided-progress-fill" id="guidedProgressFill" style="width:0%"></div></div>
-    <div class="guided-body" id="guidedBody"></div>
+    <div class="guided-progress-bar" aria-hidden="true"><div class="guided-progress-fill" id="guidedProgressFill" style="width:0%"></div></div>
+    <div class="guided-body" id="guidedBody" tabindex="-1"></div>
+    <div class="guided-session-footer" aria-label="Progresso da sessão">
+      <div class="guided-session-meta"><span id="guidedWorkoutLabel">Treino</span><strong id="guidedTimeLabel">00:00</strong></div>
+      <div class="guided-segment-track" id="guidedSegmentTrack" aria-hidden="true"></div>
+    </div>
   </div>
 
   <script src="https://js.puter.com/v2/"></script>
@@ -1512,35 +1614,29 @@
     // ===================== DATA =====================
     const TREINOS_BASE = {
       A: {
-        id: 'A', nome: 'Peito + Tríceps + Core (Supra & Infra)',
+        id: 'A', nome: 'Peito + Core (Supra & Infra)',
         foco: 'Tensão mecânica no peitoral e fortalecimento reto abdominal',
         color: 'blue',
         exercises: [
-          { id: 'a1', nome: 'Supino Reto com Barra', series: 4, reps: '8 a 10', descanso: 90, tech: '' },
-          { id: 'a2', nome: 'Supino Inclinado com Halteres', series: 4, reps: '10 a 12', descanso: 75, tech: '' },
-          { id: 'a3', nome: 'Desenvolvimento Militar', series: 3, reps: '8 a 10', descanso: 90, tech: '' },
-          { id: 'a4', nome: 'Crucifixo Máquina / Peck Deck', series: 3, reps: '12 a 15', descanso: 60, tech: '' },
-          { id: 'a5', nome: 'Elevação Lateral', series: 3, reps: '12 a 15', descanso: 45, tech: '' },
-          { id: 'a6', nome: 'Elevação Frontal', series: 2, reps: '12 a 15', descanso: 45, tech: '' },
-          { id: 'a7', nome: 'Tríceps Corda', series: 3, reps: '12 a 15', descanso: 45, tech: '' },
-          { id: 'a8', nome: 'Tríceps Testa', series: 3, reps: '10 a 12', descanso: 60, tech: '' },
-          { id: 'a9', nome: 'Abdômen Infra (Elevação de Pernas)', series: 3, reps: '12 a 15', descanso: 45, tech: '' }
+          { id: 'a1', nome: 'Supino Inclinado com Halteres', series: 4, reps: '6 a 8', descanso: 150, tech: 'Carga Pesada • RIR 1-2' },
+          { id: 'a2', nome: 'Supino Reto com Barra', series: 4, reps: '8 a 10', descanso: 120, tech: 'Controle na fase excêntrica' },
+          { id: 'a3', nome: 'Crossover na Polia (Foco Médio/Inferior)', series: 4, reps: '10 a 12', descanso: 90, tech: 'Drop-set na última série' },
+          { id: 'a4', nome: 'Crucifixo Inclinado com Halteres', series: 3, reps: '10 a 12', descanso: 90, tech: 'Alongamento máximo no fundo' },
+          { id: 'a5', nome: 'Abdominal Infra no Banco Inclinado / Paralelas', series: 3, reps: '12 a 15', descanso: 60, tech: 'Core - Infra • Sem embalo' },
+          { id: 'a6', nome: 'Abdominal Supra na Polia Alta (Cable Crunch)', series: 3, reps: '12 a 15', descanso: 60, tech: 'Core - Supra • Carga progressiva' }
         ]
       },
       B: {
-        id: 'B', nome: 'Costas + Bíceps + Core (Oblíquos & Rotação)',
+        id: 'B', nome: 'Costas + Core (Oblíquos & Rotação)',
         foco: 'Largura/espessura dorsal e estabilização rotacional',
         color: 'green',
         exercises: [
-          { id: 'b1', nome: 'Barra Fixa (ou Puxada Alta)', series: 4, reps: '8 a 10', descanso: 90, tech: '' },
-          { id: 'b2', nome: 'Remada Curvada', series: 4, reps: '8 a 10', descanso: 90, tech: '' },
-          { id: 'b3', nome: 'Remada Cavalinho', series: 3, reps: '10 a 12', descanso: 75, tech: '' },
-          { id: 'b4', nome: 'Puxada Aberta', series: 3, reps: '10 a 12', descanso: 75, tech: '' },
-          { id: 'b5', nome: 'Pull-over na Polia', series: 2, reps: '12 a 15', descanso: 60, tech: '' },
-          { id: 'b6', nome: 'Rosca Direta com Barra', series: 3, reps: '10 a 12', descanso: 60, tech: '' },
-          { id: 'b7', nome: 'Rosca Martelo', series: 3, reps: '10 a 12', descanso: 60, tech: '' },
-          { id: 'b8', nome: 'Rosca Concentrada', series: 2, reps: '12 a 15', descanso: 45, tech: '' },
-          { id: 'b9', nome: 'Abdômen Supra (Crunch na Polia)', series: 3, reps: '15', descanso: 45, tech: '' }
+          { id: 'b1', nome: 'Puxada Alta (Pegada Neutra ou Pronada)', series: 4, reps: '8 a 10', descanso: 120, tech: 'Pico de contração de 1s' },
+          { id: 'b2', nome: 'Remada Curvada com Barra (Pronada/Supinada)', series: 4, reps: '6 a 8', descanso: 120, tech: 'Carga Pesada • Tronco firme' },
+          { id: 'b3', nome: 'Remada Unilateral com Halter (Serrote)', series: 3, reps: '10 a 12', descanso: 90, tech: 'Amplitude completa' },
+          { id: 'b4', nome: 'Pulldown na Polia (Braços Estendidos)', series: 3, reps: '12 a 15', descanso: 75, tech: 'Foco em isolar o latíssimo' },
+          { id: 'b5', nome: 'Rotacional na Polia (Woodchopper/Lenhador)', series: 3, reps: '12 a 15', descanso: 60, tech: 'Core - Rotação • Por lado' },
+          { id: 'b6', nome: 'Abdominal Remador ou V-Up', series: 3, reps: '15', descanso: 60, tech: 'Core - Dinâmico • Controle total' }
         ]
       },
       C: {
@@ -1548,15 +1644,14 @@
         foco: 'Cadeia anterior/posterior de coxas, panturrilhas e proteção lombar',
         color: 'orange',
         exercises: [
-          { id: 'c1', nome: 'Agachamento Livre', series: 4, reps: '8 a 10', descanso: 120, tech: '' },
-          { id: 'c2', nome: 'Leg Press', series: 4, reps: '10 a 12', descanso: 90, tech: '' },
-          { id: 'c3', nome: 'Cadeira Extensora', series: 3, reps: '12 a 15', descanso: 60, tech: '' },
-          { id: 'c4', nome: 'Mesa Flexora', series: 3, reps: '12 a 15', descanso: 60, tech: '' },
-          { id: 'c5', nome: 'Afundo Caminhando', series: 2, reps: '12 (cada lado)', descanso: 75, tech: '' },
-          { id: 'c6', nome: 'Cadeira Adutora/Abdutora', series: 2, reps: '15 (cada)', descanso: 45, tech: '' },
-          { id: 'c7', nome: 'Panturrilha em Pé', series: 4, reps: '12 a 15', descanso: 45, tech: '' },
-          { id: 'c8', nome: 'Panturrilha Sentado', series: 3, reps: '15', descanso: 45, tech: '' },
-          { id: 'c9', nome: 'Prancha Frontal', series: 3, reps: '40-60s', descanso: 45, tech: '' }
+          { id: 'c1', nome: 'Agachamento Livre com Barra', series: 4, reps: '6 a 8', descanso: 180, tech: 'Carga Pesada • Profundidade total' },
+          { id: 'c2', nome: 'Leg Press 45°', series: 4, reps: '10 a 12', descanso: 120, tech: 'Pés na largura dos ombros' },
+          { id: 'c3', nome: 'Stiff / Levantamento Terra Romeno', series: 4, reps: '8 a 10', descanso: 120, tech: 'Foco em posteriores e glúteos' },
+          { id: 'c4', nome: 'Cadeira Extensora', series: 3, reps: '12 a 15', descanso: 90, tech: 'Drop-set Duplo na última série' },
+          { id: 'c5', nome: 'Mesa Flexora', series: 3, reps: '10 a 12', descanso: 90, tech: 'Cadência controlada' },
+          { id: 'c6', nome: 'Gêmeos no Leg Press ou Em Pé', series: 5, reps: '12 a 15', descanso: 60, tech: 'Pausa de 2s no pico de contração' },
+          { id: 'c7', nome: 'Prancha Frontal (com anilha nas costas)', series: 3, reps: '45-60s', descanso: 60, tech: 'Core - Anti-Extensão • Bodyline firme' },
+          { id: 'c8', nome: 'Extensão de Lombar no Banco Romano', series: 3, reps: '12 a 15', descanso: 60, tech: 'Core - Lombar • Pausa de 2s no topo' }
         ]
       },
       D: {
@@ -1564,16 +1659,15 @@
         foco: 'Hipertrofia direcionada de braços, deltoides e estabilidade lateral',
         color: 'purple',
         exercises: [
-          { id: 'd1', nome: 'Desenvolvimento com Halteres Sentado', series: 4, reps: '8 a 10', descanso: 90, tech: '' },
-          { id: 'd2', nome: 'Elevação Lateral na Polia', series: 4, reps: '12 a 15', descanso: 45, tech: '' },
-          { id: 'd3', nome: 'Elevação Posterior (Crucifixo Invertido)', series: 3, reps: '12 a 15', descanso: 45, tech: '' },
-          { id: 'd4', nome: 'Encolhimento de Trapézio', series: 2, reps: '12 a 15', descanso: 60, tech: '' },
-          { id: 'd5', nome: 'Rosca Scott', series: 3, reps: '10 a 12', descanso: 60, tech: '' },
-          { id: 'd6', nome: 'Rosca Martelo', series: 3, reps: '10 a 12', descanso: 60, tech: '' },
-          { id: 'd7', nome: 'Rosca 21', series: 2, reps: '21', descanso: 60, tech: '' },
-          { id: 'd8', nome: 'Tríceps Testa com Halteres', series: 3, reps: '10 a 12', descanso: 75, tech: '' },
-          { id: 'd9', nome: 'Tríceps Coice com Halter', series: 3, reps: '12 a 15', descanso: 45, tech: '' },
-          { id: 'd10', nome: 'Abdômen Completo (Crunch + Elevação de Pernas)', series: 3, reps: '15', descanso: 45, tech: '' }
+          { id: 'd1', nome: 'Desenvolvimento com Halteres (Sentado)', series: 4, reps: '8 a 10', descanso: 120, tech: 'Amplitude sem bater os halteres' },
+          { id: 'd2', nome: 'Elevação Lateral na Polia ou Halteres', series: 4, reps: '10 a 12', descanso: 75, tech: 'Rest-Pause na última série' },
+          { id: 'd3', nome: 'Crucifixo Inverso no Voador ou Polia', series: 4, reps: '12 a 15', descanso: 60, tech: 'Foco em deltoide posterior' },
+          { id: 'd4', nome: 'Tríceps Testa com Barra W', series: 4, reps: '8 a 10', descanso: 90, tech: 'Cotovelos fechados e fixos' },
+          { id: 'd5', nome: 'Tríceps Pulley (Corda)', series: 3, reps: '10 a 12', descanso: 60, tech: 'Drop-set na última série' },
+          { id: 'd6', nome: 'Rosca Direta com Barra W', series: 4, reps: '8 a 10', descanso: 90, tech: 'Sem balanço de tronco' },
+          { id: 'd7', nome: 'Rosca Alternada Inclinada', series: 3, reps: '10 a 12', descanso: 60, tech: 'Alongamento do bíceps no fundo' },
+          { id: 'd8', nome: 'Rosca Martelo com Halteres', series: 3, reps: '10 a 12', descanso: 60, tech: 'Foco em braquial e braquiorradial' },
+          { id: 'd9', nome: 'Prancha Lateral (ou Caminhada do Fazendeiro 1L)', series: 3, reps: '45s/lado', descanso: 60, tech: 'Core - Anti-Lateral • Por lado' }
         ]
       }
     };
@@ -1592,6 +1686,8 @@
     // weightHistory: { exId: [ {date, week, weight}, ... ] }
     // completedWorkouts: [ {id, treino, date, week, weights: {exId: weight}} ]
     // week: number
+
+    const STORAGE_KEY = 'marsbGym_v2';
 
     let currentWeek = 1;
     let currentPage = 'home';
@@ -1616,27 +1712,137 @@
       };
     }
 
-    function normalizeState(s) {
-      s.sets = s.sets || {};
-      s.weights = s.weights || {};
-      s.weightHistory = s.weightHistory || {};
-      s.completedWorkouts = s.completedWorkouts || [];
-      s.week = s.week || 1;
-      s.customExercises = s.customExercises || { A: [], B: [], C: [], D: [] };
-      ['A','B','C','D'].forEach(k => { if (!s.customExercises[k]) s.customExercises[k] = []; });
-      s.exerciseOverrides = s.exerciseOverrides || {};
-      s.exerciseNotes = s.exerciseNotes || {};
-      s.prefs = Object.assign({ autoTimer: true, vibrate: true }, s.prefs || {});
-      s.bodyWeights = Array.isArray(s.bodyWeights) ? s.bodyWeights : [];
-      s.bodyMeta = Object.assign({ heightCm: null, goalKg: null }, s.bodyMeta || {});
-      if (s.customProgram && !s.customProgram.A) s.customProgram = null;
-      s.customProgramMeta = s.customProgramMeta || null;
-      return s;
+    function boundedText(value, maxLength = 240) {
+      return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim().slice(0, maxLength);
+    }
+
+    function safeNumber(value, min, max, fallback) {
+      const number = Number(value);
+      return Number.isFinite(number) && number >= min && number <= max ? number : fallback;
+    }
+
+    function sanitizeExercise(ex, treinoId, index) {
+      const fallbackId = `${String(treinoId).toLowerCase()}_${index + 1}`;
+      const id = boundedText(ex && ex.id ? ex.id : fallbackId, 80).replace(/[^a-zA-Z0-9_-]/g, '_') || fallbackId;
+      return {
+        id,
+        nome: boundedText(ex && ex.nome, 140) || 'Exercício',
+        series: Math.round(safeNumber(ex && ex.series, 1, 10, 3)),
+        reps: boundedText(ex && ex.reps, 40) || '8 a 12',
+        descanso: Math.round(safeNumber(ex && ex.descanso, 0, 600, 90)),
+        tech: boundedText(ex && ex.tech, 240)
+      };
+    }
+
+    function sanitizeProgram(program) {
+      if (!program || typeof program !== 'object') return null;
+      const colors = { A: 'blue', B: 'green', C: 'orange', D: 'purple' };
+      const out = {};
+      for (const key of ['A', 'B', 'C', 'D']) {
+        const source = program[key];
+        if (!source || !Array.isArray(source.exercises)) return null;
+        const exercises = source.exercises.slice(0, 100).map((ex, index) => sanitizeExercise(ex, key, index));
+        if (!exercises.length) return null;
+        out[key] = {
+          id: key,
+          nome: boundedText(source.nome, 140) || `Treino ${key}`,
+          foco: boundedText(source.foco, 240),
+          color: colors[key],
+          exercises
+        };
+      }
+      return out;
+    }
+
+    function normalizeState(input) {
+      const source = input && typeof input === 'object' ? input : {};
+      const clean = defaultState();
+      clean.week = Math.round(safeNumber(source.week, 1, 4, 1));
+
+      if (source.sets && typeof source.sets === 'object') {
+        Object.entries(source.sets).slice(0, 500).forEach(([id, values]) => {
+          const safeId = boundedText(id, 80).replace(/[^a-zA-Z0-9_-]/g, '_');
+          if (!safeId || !Array.isArray(values)) return;
+          clean.sets[safeId] = values.slice(0, 10).map(Boolean);
+        });
+      }
+      if (source.weights && typeof source.weights === 'object') {
+        Object.entries(source.weights).slice(0, 500).forEach(([id, value]) => {
+          const safeId = boundedText(id, 80).replace(/[^a-zA-Z0-9_-]/g, '_');
+          const kg = safeNumber(value, 0, 1000, null);
+          if (safeId && kg !== null) clean.weights[safeId] = String(kg);
+        });
+      }
+      if (source.weightHistory && typeof source.weightHistory === 'object') {
+        Object.entries(source.weightHistory).slice(0, 500).forEach(([id, entries]) => {
+          const safeId = boundedText(id, 80).replace(/[^a-zA-Z0-9_-]/g, '_');
+          if (!safeId || !Array.isArray(entries)) return;
+          clean.weightHistory[safeId] = entries.slice(-20).map((entry) => ({
+            date: /^\d{4}-\d{2}-\d{2}$/.test(String(entry && entry.date)) ? String(entry.date) : todayKey(),
+            week: Math.round(safeNumber(entry && entry.week, 1, 4, 1)),
+            weight: String(safeNumber(entry && entry.weight, 0, 1000, 0))
+          }));
+        });
+      }
+      if (Array.isArray(source.completedWorkouts)) {
+        clean.completedWorkouts = source.completedWorkouts.slice(-500).map((entry, index) => ({
+          id: boundedText(entry && entry.id, 100) || `history_${index}`,
+          treino: ['A', 'B', 'C', 'D'].includes(entry && entry.treino) ? entry.treino : 'A',
+          date: /^\d{4}-\d{2}-\d{2}$/.test(String(entry && entry.date)) ? String(entry.date) : todayKey(),
+          week: Math.round(safeNumber(entry && entry.week, 1, 4, 1)),
+          weights: entry && entry.weights && typeof entry.weights === 'object' ? Object.fromEntries(
+            Object.entries(entry.weights).slice(0, 100).map(([id, value]) => [boundedText(id, 80), String(safeNumber(value, 0, 1000, 0))])
+          ) : {}
+        }));
+      }
+      if (source.customExercises && typeof source.customExercises === 'object') {
+        ['A', 'B', 'C', 'D'].forEach((key) => {
+          clean.customExercises[key] = Array.isArray(source.customExercises[key])
+            ? source.customExercises[key].slice(0, 100).map((ex, index) => sanitizeExercise(ex, key, index))
+            : [];
+        });
+      }
+      if (source.exerciseOverrides && typeof source.exerciseOverrides === 'object') {
+        Object.entries(source.exerciseOverrides).slice(0, 500).forEach(([id, override]) => {
+          if (!override || typeof override !== 'object') return;
+          clean.exerciseOverrides[boundedText(id, 80)] = {
+            nome: boundedText(override.nome, 140),
+            series: Math.round(safeNumber(override.series, 1, 10, 3)),
+            reps: boundedText(override.reps, 40),
+            descanso: Math.round(safeNumber(override.descanso, 0, 600, 90)),
+            tech: boundedText(override.tech, 240)
+          };
+        });
+      }
+      if (source.exerciseNotes && typeof source.exerciseNotes === 'object') {
+        Object.entries(source.exerciseNotes).slice(0, 500).forEach(([id, note]) => {
+          clean.exerciseNotes[boundedText(id, 80)] = boundedText(note, 500);
+        });
+      }
+      clean.prefs = Object.assign(clean.prefs, {
+        autoTimer: source.prefs?.autoTimer !== false,
+        vibrate: source.prefs?.vibrate !== false
+      });
+      clean.bodyWeights = Array.isArray(source.bodyWeights) ? source.bodyWeights.slice(-500).map((entry) => ({
+        date: /^\d{4}-\d{2}-\d{2}$/.test(String(entry && entry.date)) ? String(entry.date) : todayKey(),
+        kg: Number(safeNumber(entry && entry.kg, 30, 300, 0).toFixed(2))
+      })).filter((entry) => entry.kg > 0) : [];
+      clean.bodyMeta = {
+        heightCm: safeNumber(source.bodyMeta?.heightCm, 120, 230, null),
+        goalKg: safeNumber(source.bodyMeta?.goalKg, 30, 300, null)
+      };
+      clean.customProgram = sanitizeProgram(source.customProgram);
+      clean.customProgramMeta = source.customProgramMeta ? {
+        name: boundedText(source.customProgramMeta.name, 120),
+        author: boundedText(source.customProgramMeta.author, 120),
+        importedAt: boundedText(source.customProgramMeta.importedAt, 40)
+      } : null;
+      return clean;
     }
 
     function loadState() {
       try {
-        const raw = localStorage.getItem('marsbGym_v2');
+        const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) return normalizeState(JSON.parse(raw));
       } catch (e) {}
       // migrate from v1 if exists
@@ -1692,13 +1898,37 @@
       return arr;
     }
 
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, (char) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[char]));
+    }
+
+    function encodeData(value) {
+      return encodeURIComponent(String(value ?? ''));
+    }
+
+    function decodeData(value) {
+      try { return decodeURIComponent(value || ''); } catch (e) { return ''; }
+    }
+
     function saveState() {
-      localStorage.setItem('marsbGym_v2', JSON.stringify(state));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        showToast('Não foi possível salvar neste dispositivo. Exporte um backup.');
+      }
     }
 
     function todayKey() {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function isValidDateKey(value) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ''))) return false;
+      const d = new Date(String(value) + 'T12:00:00');
+      return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value;
     }
 
     function formatDate(iso) {
@@ -1714,11 +1944,18 @@
         const done = getTreinoExercises(t.id).length > 0 && isTreinoComplete(t.id);
         const el = document.createElement('div');
         el.className = 'qs-card';
-        el.onclick = () => openTreino(t.id);
+        el.setAttribute('role', 'button');
+        el.setAttribute('tabindex', '0');
+        el.setAttribute('aria-label', `Abrir Treino ${t.id}: ${t.nome.split('+')[0].trim()}`);
+        const open = () => openTreino(t.id);
+        el.addEventListener('click', open);
+        el.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); }
+        });
         el.innerHTML = `
           ${done ? '<span class="qs-done">✓ Feito</span>' : ''}
-          <div class="qs-letter qs-${t.id.toLowerCase()}">${t.id}</div>
-          <div class="qs-name">${t.nome.split('+')[0].trim()}</div>
+          <div class="qs-letter qs-${escapeHtml(t.id.toLowerCase())}">${escapeHtml(t.id)}</div>
+          <div class="qs-name">${escapeHtml(t.nome.split('+')[0].trim())}</div>
         `;
         container.appendChild(el);
       });
@@ -1741,20 +1978,36 @@
         const complete = doneSets >= totalSets && totalSets > 0;
 
         card.innerHTML = `
-          <div class="card-header" onclick="toggleCard('${treino.id}')">
+          <div class="card-header js-card-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="body-${encodeData(treino.id)}">
             <div>
               <div class="card-title">
-                <span class="badge badge-${treino.color}">Treino ${treino.id}</span>
-                ${treino.nome}
+                <span class="badge badge-${escapeHtml(treino.color)}">Treino ${escapeHtml(treino.id)}</span>
+                ${escapeHtml(treino.nome)}
                 ${complete ? ' <span style="color:var(--accent);font-size:0.8rem;">✓</span>' : ''}
               </div>
-              <div class="card-meta">${doneSets}/${totalSets} séries • ${treino.foco}</div>
+              <div class="card-meta">${doneSets}/${totalSets} séries • ${escapeHtml(treino.foco)}</div>
+              <button class="guided-start-btn js-start-guided" type="button" aria-label="Iniciar treino guiado do Treino ${escapeHtml(treino.id)}">▶ Iniciar treino guiado</button>
             </div>
-            <span class="chevron">▼</span>
+            <span class="chevron" aria-hidden="true">▼</span>
           </div>
-          <div class="card-body" id="body-${treino.id}"></div>
+          <div class="card-body" id="body-${encodeData(treino.id)}"></div>
         `;
         container.appendChild(card);
+
+        const header = card.querySelector('.js-card-toggle');
+        const toggle = () => {
+          toggleCard(treino.id);
+          header.setAttribute('aria-expanded', card.classList.contains('open') ? 'true' : 'false');
+        };
+        header.addEventListener('click', toggle);
+        header.addEventListener('keydown', (event) => {
+          if (event.target.closest('.js-start-guided')) return;
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(); }
+        });
+        card.querySelector('.js-start-guided')?.addEventListener('click', (event) => {
+          event.stopPropagation();
+          startGuided(treino.id);
+        });
 
         const body = card.querySelector('.card-body');
 
@@ -1773,49 +2026,55 @@
           const lastEntry = fullHist[fullHist.length - 1];
 
           const lastTimeHtml = (lastEntry && lastEntry.week !== currentWeek)
-            ? `<div class="last-time-hint">🕓 Última vez (Semana ${lastEntry.week}): <strong>${lastEntry.weight}kg</strong></div>`
+            ? `<div class="last-time-hint">🕓 Última vez (Semana ${escapeHtml(lastEntry.week)}): <strong>${escapeHtml(lastEntry.weight)}kg</strong></div>`
             : '';
 
           const histHtml = hist.length
-            ? `<div class="weight-history">Histórico: ${hist.map(h => `<span>${h.weight}kg</span> (S${h.week})`).join(' → ')}</div>`
+            ? `<div class="weight-history">Histórico: ${hist.map(h => `<span>${escapeHtml(h.weight)}kg</span> (S${escapeHtml(h.week)})`).join(' → ')}</div>`
             : '';
 
           const exEl = document.createElement('div');
           exEl.className = 'exercise';
           exEl.innerHTML = `
             <div class="exercise-top">
-              <div class="exercise-name">${ex.nome}</div>
+              <div class="exercise-name">${escapeHtml(ex.nome)}</div>
               <div class="exercise-icons">
-                <button class="exercise-icon-btn" onclick="openEditExercise('${ex.id}', '${treino.id}')" title="Editar">✏️</button>
+                <button class="exercise-icon-btn js-edit-exercise" type="button" title="Editar exercício" aria-label="Editar ${escapeHtml(ex.nome)}">✏️</button>
               </div>
             </div>
             <div class="exercise-details">
-              <span>📊 ${ex.series} × ${ex.reps}</span>
-              <span>⏱ ${formatRest(ex.descanso)}</span>
+              <span>📊 ${escapeHtml(ex.series)} × ${escapeHtml(ex.reps)}</span>
+              <span>⏱ ${escapeHtml(formatRest(ex.descanso))}</span>
               ${ex.isCustom ? '<span class="badge badge-purple">Personalizado</span>' : ''}
             </div>
-            <div class="tech-note">${ex.tech}</div>
-            ${(state.exerciseNotes && state.exerciseNotes[ex.id]) ? `<div class="tech-note" style="border-left:3px solid var(--cyan);">📝 ${state.exerciseNotes[ex.id]}</div>` : ''}
+            <div class="tech-note">${escapeHtml(ex.tech)}</div>
+            ${(state.exerciseNotes && state.exerciseNotes[ex.id]) ? `<div class="tech-note" style="border-left:3px solid var(--cyan);">📝 ${escapeHtml(state.exerciseNotes[ex.id])}</div>` : ''}
             ${lastTimeHtml}
             <div class="weight-row">
-              <label>Peso:</label>
-              <input type="number" class="weight-input" inputmode="decimal" placeholder="${lastEntry ? lastEntry.weight : '0'}" value="${weight}"
-                     onchange="saveWeight('${ex.id}', this.value)" onblur="saveWeight('${ex.id}', this.value)" />
+              <label for="weight-${encodeData(ex.id)}">Peso:</label>
+              <input type="number" id="weight-${encodeData(ex.id)}" class="weight-input js-save-weight" inputmode="decimal" placeholder="${escapeHtml(lastEntry ? lastEntry.weight : '0')}" value="${escapeHtml(weight)}" min="0" max="1000" step="0.1" />
               <span class="weight-unit">kg</span>
             </div>
             ${hist.length ? `
             <div class="weight-history-row">
               ${histHtml}
-              <button class="chart-link-btn" onclick="openChart('${ex.id}')">📈 Gráfico</button>
+              <button class="chart-link-btn js-open-chart" type="button">📈 Gráfico</button>
             </div>` : ''}
             <div class="sets-row">
               ${Array.from({length: ex.series}, (_, i) => `
-                <button class="set-btn ${doneArr[i] ? 'done' : ''}"
-                        onclick="toggleSet('${ex.id}', ${i}, ${ex.descanso}, '${treino.id}')">${i+1}</button>
+                <button class="set-btn js-toggle-set ${doneArr[i] ? 'done' : ''}" type="button" data-set-index="${i}">${i+1}</button>
               `).join('')}
-              <button class="rest-btn" onclick="startTimer(${ex.descanso})">⏱ Timer</button>
+              <button class="rest-btn js-start-rest" type="button">⏱ Timer</button>
             </div>
           `;
+          exEl.querySelector('.js-edit-exercise').addEventListener('click', () => openEditExercise(ex.id, treino.id));
+          exEl.querySelector('.js-save-weight').addEventListener('change', (event) => saveWeight(ex.id, event.currentTarget.value));
+          exEl.querySelector('.js-save-weight').addEventListener('blur', (event) => saveWeight(ex.id, event.currentTarget.value));
+          exEl.querySelector('.js-open-chart')?.addEventListener('click', () => openChart(ex.id));
+          exEl.querySelectorAll('.js-toggle-set').forEach((button) => {
+            button.addEventListener('click', () => toggleSet(ex.id, Number(button.dataset.setIndex), ex.descanso, treino.id));
+          });
+          exEl.querySelector('.js-start-rest').addEventListener('click', () => startTimer(ex.descanso));
           body.appendChild(exEl);
         });
 
@@ -1825,12 +2084,6 @@
         addBtn.onclick = () => openAddExercise(treino.id);
         body.appendChild(addBtn);
 
-        if (exercises.length) {
-          const actionsRow = document.createElement('div');
-          actionsRow.className = 'card-actions-row';
-          actionsRow.innerHTML = `<button class="guided-start-btn" onclick="startGuided('${treino.id}')">▶ Iniciar treino guiado</button>`;
-          body.appendChild(actionsRow);
-        }
       });
     }
 
@@ -1851,6 +2104,7 @@
 
     function renderHistory() {
       const list = document.getElementById('historyList');
+      list.innerHTML = '';
       const hist = (state.completedWorkouts || []).slice().reverse();
 
       if (!hist.length) {
@@ -1858,26 +2112,32 @@
         return;
       }
 
-      list.innerHTML = hist.map(h => {
+      hist.forEach(h => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        
         const weightsStr = Object.entries(h.weights || {})
           .filter(([,v]) => v)
           .map(([exId, w]) => {
             const ex = findExercise(exId);
-            return ex ? `${ex.nome}: ${w}kg` : `${exId}: ${w}kg`;
+            const name = ex ? ex.nome : exId;
+            return escapeHtml(name) + ': ' + escapeHtml(w) + 'kg';
           })
           .join('<br>');
 
-        return `
-          <div class="history-item">
-            <div class="hi-date">${formatDate(h.date)} • Semana ${h.week}</div>
-            <div class="hi-treino">Treino ${h.treino} — ${treinosMap()[h.treino]?.nome || ''}</div>
-            ${weightsStr ? `<div class="hi-weights">${weightsStr}</div>` : ''}
-            <div class="hi-actions">
-              <button class="hi-del" onclick="deleteHistoryEntry('${h.id}')">Apagar registro</button>
-            </div>
+        const treinoNome = treinosMap()[h.treino]?.nome || '';
+        
+        item.innerHTML = `
+          <div class="hi-date">${escapeHtml(formatDate(h.date))} • Semana ${escapeHtml(h.week)}</div>
+          <div class="hi-treino">Treino ${escapeHtml(h.treino)} — ${escapeHtml(treinoNome)}</div>
+          ${weightsStr ? `<div class="hi-weights">${weightsStr}</div>` : ''}
+          <div class="hi-actions">
+            <button class="hi-del js-del-hist" type="button">Apagar registro</button>
           </div>
         `;
-      }).join('');
+        item.querySelector('.js-del-hist').addEventListener('click', () => deleteHistoryEntry(h.id));
+        list.appendChild(item);
+      });
     }
 
     function findExercise(exId) {
@@ -2017,6 +2277,8 @@
       if (!card) return;
       card.classList.toggle('open');
       // When expanding a workout, scroll a bit and hide header for more space
+      const header = card.querySelector('.js-card-toggle');
+      if (header) header.setAttribute('aria-expanded', card.classList.contains('open') ? 'true' : 'false');
       if (card.classList.contains('open')) {
         setTimeout(() => {
           card.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2033,6 +2295,8 @@
       const card = document.getElementById(`card-${id}`);
       if (card) {
         card.classList.add('open');
+        const header = card.querySelector('.js-card-toggle');
+        if (header) header.setAttribute('aria-expanded', 'true');
         setTimeout(() => {
           card.scrollIntoView({ behavior: 'smooth', block: 'start' });
           // After landing on the treino, free vertical space
@@ -2064,18 +2328,25 @@
 
     function saveWeight(exId, value) {
       const prev = state.weights[exId] || '';
-      state.weights[exId] = value;
+      const trimmed = String(value ?? '').trim().replace(',', '.');
+      const numeric = trimmed === '' ? null : Number(trimmed);
+      if (numeric !== null && (!Number.isFinite(numeric) || numeric < 0 || numeric > 1000)) {
+        showToast('Informe uma carga entre 0 e 1000 kg');
+        return;
+      }
+      const normalized = numeric === null ? '' : String(Number(numeric.toFixed(2)));
+      state.weights[exId] = normalized;
 
       // Record in history when weight changes and is not empty
-      if (value && value !== prev) {
+      if (normalized && normalized !== prev) {
         if (!state.weightHistory[exId]) state.weightHistory[exId] = [];
         const last = state.weightHistory[exId][state.weightHistory[exId].length - 1];
         // Only add if different from last entry of same week
-        if (!last || last.weight !== value || last.week !== currentWeek) {
+        if (!last || last.weight !== normalized || last.week !== currentWeek) {
           state.weightHistory[exId].push({
             date: todayKey(),
             week: currentWeek,
-            weight: value
+            weight: normalized
           });
           // Keep last 20 entries per exercise
           if (state.weightHistory[exId].length > 20) {
@@ -2329,7 +2600,38 @@
     }
 
     // ===================== GUIDED WORKOUT MODE =====================
-    const guidedState = { active: false, treinoId: null, exercises: [], index: 0, advanceTimeout: null };
+    const guidedState = { active: false, treinoId: null, exercises: [], index: 0, advanceTimeout: null, startedAt: 0, clockId: null, returnFocus: null };
+
+    function formatGuidedElapsed(seconds) {
+      const safe = Math.max(0, Number(seconds) || 0);
+      const minutes = Math.floor(safe / 60);
+      const secs = safe % 60;
+      return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function updateGuidedClock() {
+      if (!guidedState.active || !guidedState.startedAt) return;
+      const label = document.getElementById('guidedTimeLabel');
+      if (label) label.textContent = formatGuidedElapsed(Math.floor((Date.now() - guidedState.startedAt) / 1000));
+    }
+
+    function updateGuidedSessionChrome() {
+      const workout = treinosMap()[guidedState.treinoId];
+      const total = guidedState.exercises.length;
+      const label = document.getElementById('guidedWorkoutLabel');
+      const track = document.getElementById('guidedSegmentTrack');
+      const fill = document.getElementById('guidedProgressFill');
+      if (label) label.textContent = workout ? `Treino ${workout.id} • ${workout.nome.split('+')[0].trim()}` : 'Treino guiado';
+      if (fill) fill.style.width = `${total ? Math.min(100, ((guidedState.index + 1) / total) * 100) : 0}%`;
+      if (track) {
+        track.innerHTML = guidedState.exercises.map((ex, i) => {
+          const complete = getDoneArr(ex).every(Boolean);
+          const current = i === guidedState.index;
+          return `<span class="guided-segment ${complete ? 'done' : ''} ${current ? 'active' : ''}" title="Exercício ${i + 1}"></span>`;
+        }).join('');
+      }
+      updateGuidedClock();
+    }
 
     function startGuided(treinoId) {
       const exercises = getTreinoExercises(treinoId);
@@ -2338,17 +2640,29 @@
       guidedState.treinoId = treinoId;
       guidedState.exercises = exercises;
       guidedState.index = 0;
-      document.getElementById('guidedOverlay').classList.add('show');
+      guidedState.startedAt = Date.now();
+      guidedState.returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      if (guidedState.clockId) clearInterval(guidedState.clockId);
+      guidedState.clockId = setInterval(updateGuidedClock, 1000);
+      const overlay = document.getElementById('guidedOverlay');
+      overlay.classList.add('show');
       renderGuidedStep();
+      requestAnimationFrame(() => overlay.focus({ preventScroll: true }));
     }
 
     function exitGuided() {
       guidedState.active = false;
       if (guidedState.advanceTimeout) clearTimeout(guidedState.advanceTimeout);
+      if (guidedState.clockId) clearInterval(guidedState.clockId);
+      guidedState.advanceTimeout = null;
+      guidedState.clockId = null;
+      const returnFocus = guidedState.returnFocus;
+      guidedState.returnFocus = null;
       document.getElementById('guidedOverlay').classList.remove('show');
       renderTreinos();
       renderQuickStart();
       updateStats();
+      if (returnFocus && document.contains(returnFocus)) returnFocus.focus();
     }
 
     function guidedGoTo(i) {
@@ -2378,61 +2692,99 @@
 
     function renderGuidedStep() {
       const ex = guidedState.exercises[guidedState.index];
+      if (!ex) return;
       const total = guidedState.exercises.length;
-      document.getElementById('guidedProgressLabel').textContent = `Exercício ${guidedState.index + 1}/${total}`;
-      document.getElementById('guidedProgressFill').style.width = `${((guidedState.index) / total) * 100}%`;
-
+      const workout = treinosMap()[guidedState.treinoId];
       const doneArr = getDoneArr(ex);
       const allDone = doneArr.every(Boolean);
       const weight = state.weights[ex.id] || '';
       const fullHist = (state.weightHistory[ex.id] || []);
       const lastEntry = fullHist[fullHist.length - 1];
-      const lastTimeHtml = (lastEntry && lastEntry.week !== currentWeek)
-        ? `<div class="last-time-hint">🕓 Última vez (Semana ${lastEntry.week}): <strong>${lastEntry.weight}kg</strong></div>` : '';
+      const personalRecord = fullHist.reduce((max, entry) => Math.max(max, Number(entry.weight) || 0), 0);
+      const previousAttempt = lastEntry ? `${ex.reps} × ${lastEntry.weight} kg` : 'Sem registro anterior';
+      const guidedBody = document.getElementById('guidedBody');
 
-      document.getElementById('guidedBody').innerHTML = `
-        <div class="guided-ex-name">${ex.nome}</div>
-        <div class="guided-badge-row">
-          <span class="badge badge-blue">📊 ${ex.series} × ${ex.reps}</span>
-          <span class="badge badge-orange">⏱ ${formatRest(ex.descanso)}</span>
-        </div>
-        <div class="tech-note">${ex.tech}</div>
-        ${(state.exerciseNotes && state.exerciseNotes[ex.id]) ? `<div class="tech-note" style="border-left:3px solid var(--cyan);">📝 ${state.exerciseNotes[ex.id]}</div>` : ''}
-        ${lastTimeHtml}
-        <div class="weight-row" style="margin-top:14px;">
-          <label>Peso:</label>
-          <input type="number" class="weight-input" inputmode="decimal" placeholder="${lastEntry ? lastEntry.weight : '0'}" value="${weight}"
-                 onchange="saveWeight('${ex.id}', this.value)" onblur="saveWeight('${ex.id}', this.value)" />
-          <span class="weight-unit">kg</span>
-        </div>
-        <div class="sets-row">
-          ${Array.from({length: ex.series}, (_, i) => `
-            <button class="set-btn ${doneArr[i] ? 'done' : ''}"
-                    onclick="toggleSet('${ex.id}', ${i}, ${ex.descanso}, '${guidedState.treinoId}')">${i+1}</button>
-          `).join('')}
-          <button class="rest-btn" onclick="startTimer(${ex.descanso})">⏱ Timer</button>
-        </div>
-        <div class="guided-nav-row">
-          <button class="guided-prev-btn" onclick="guidedGoTo(${guidedState.index - 1})" ${guidedState.index === 0 ? 'disabled style="opacity:0.4;"' : ''}>← Anterior</button>
-          <button class="guided-next-btn ${allDone ? 'ready' : ''}" onclick="guidedGoTo(${guidedState.index + 1})">
-            ${guidedState.index === total - 1 ? 'Finalizar ✓' : (allDone ? 'Próximo →' : 'Pular →')}
-          </button>
+      document.getElementById('guidedTitle').textContent = `Exercício ${guidedState.index + 1}/${total}`;
+      guidedBody.innerHTML = `
+        <div class="guided-workout-shell">
+          <div class="guided-activity-chip">Atividade ${guidedState.index + 1}</div>
+          <article class="guided-activity-card" aria-labelledby="guidedExerciseTitle">
+            <div class="guided-media-card">
+              <div class="guided-media-visual" role="img" aria-label="Ilustração abstrata da atividade">
+                <span class="guided-art-mark">▶</span>
+              </div>
+              <div class="guided-media-copy">
+                <div class="guided-muscle-label">${escapeHtml(workout ? workout.nome.split('+')[0].trim() : 'Treino')}</div>
+                <h2 class="guided-ex-name" id="guidedExerciseTitle">${escapeHtml(ex.nome)}</h2>
+                <button class="guided-video-btn js-guided-video" type="button">▷ Ver instruções</button>
+              </div>
+            </div>
+            <div class="guided-record ${personalRecord ? '' : 'empty'}">★ Recorde pessoal: ${personalRecord ? `${escapeHtml(personalRecord)} kg` : 'sem registro'}</div>
+            <div class="guided-section-label">Progressão de carga</div>
+            <div class="guided-metric-grid">
+              <div class="guided-metric">Repetições<strong>${escapeHtml(ex.reps)}</strong></div>
+              <div class="guided-metric">Descanso<strong>${escapeHtml(formatRest(ex.descanso))}</strong></div>
+              <div class="guided-metric">Técnica<strong>${escapeHtml(ex.tech.split('•')[0].trim())}</strong></div>
+            </div>
+            <div class="guided-load-row">
+              <label class="guided-load-label" for="guidedWeightInput">Carga atual</label>
+              <input type="number" id="guidedWeightInput" class="guided-load-input" inputmode="decimal" placeholder="${escapeHtml(lastEntry ? lastEntry.weight : '0')}" value="${escapeHtml(weight)}" min="0" max="1000" step="0.1" aria-describedby="guidedLoadHint" />
+              <span class="guided-load-label">kg</span>
+            </div>
+            <div class="guided-load-label" id="guidedLoadHint" style="text-align:center;margin-bottom:12px;">${escapeHtml(ex.tech)}</div>
+            <div class="guided-set-head" aria-hidden="true"><span>Série</span><span>Reps</span><span>Último treino</span><span></span></div>
+            <div class="guided-set-list">
+              ${Array.from({length: ex.series}, (_, i) => `
+                <button class="guided-set-row js-guided-set ${doneArr[i] ? 'done' : ''}" type="button" data-set-index="${i}" aria-pressed="${doneArr[i] ? 'true' : 'false'}" aria-label="Marcar série ${i + 1} de ${escapeHtml(ex.nome)}">
+                  <span class="guided-set-number">${i + 1}</span>
+                  <span class="guided-set-value">${escapeHtml(ex.reps)}</span>
+                  <span class="guided-set-value">${escapeHtml(previousAttempt)}</span>
+                  <span class="guided-set-status" aria-hidden="true">✓</span>
+                </button>
+              `).join('')}
+            </div>
+            <div class="guided-history-card">
+              <span class="guided-history-icon" aria-hidden="true">↶</span>
+              <div><span class="guided-history-title">Histórico da atividade</span><span class="guided-history-detail">${lastEntry ? `Último registro: ${escapeHtml(lastEntry.weight)} kg • Semana ${escapeHtml(lastEntry.week)}` : 'Marque séries e registre a carga para criar seu histórico.'}</span></div>
+            </div>
+            <div class="guided-nav-row">
+              <button class="guided-prev-btn js-guided-prev" type="button" ${guidedState.index === 0 ? 'disabled' : ''}>← Anterior</button>
+              <button class="guided-next-btn js-guided-next ${allDone ? 'ready' : ''}" type="button">${guidedState.index === total - 1 ? 'Finalizar ✓' : (allDone ? 'Próximo →' : 'Pular →')}</button>
+            </div>
+          </article>
         </div>
       `;
+      const guidedWeight = guidedBody.querySelector('#guidedWeightInput');
+      guidedWeight.addEventListener('change', () => saveWeight(ex.id, guidedWeight.value));
+      guidedWeight.addEventListener('blur', () => saveWeight(ex.id, guidedWeight.value));
+      guidedBody.querySelectorAll('.js-guided-set').forEach((button) => {
+        button.addEventListener('click', () => toggleSet(ex.id, Number(button.dataset.setIndex), ex.descanso, guidedState.treinoId));
+      });
+      guidedBody.querySelector('.js-guided-video').addEventListener('click', () => showToast('Instrução em vídeo poderá ser adicionada ao exercício no próximo passo.'));
+      guidedBody.querySelector('.js-guided-prev').addEventListener('click', () => guidedGoTo(guidedState.index - 1));
+      guidedBody.querySelector('.js-guided-next').addEventListener('click', () => guidedGoTo(guidedState.index + 1));
+      updateGuidedSessionChrome();
     }
 
     function renderGuidedComplete() {
       if (guidedState.advanceTimeout) clearTimeout(guidedState.advanceTimeout);
       document.getElementById('guidedProgressFill').style.width = '100%';
-      document.getElementById('guidedProgressLabel').textContent = 'Concluído';
-      document.getElementById('guidedBody').innerHTML = `
+      document.getElementById('guidedTitle').textContent = 'Concluído';
+      const workout = treinosMap()[guidedState.treinoId];
+      const workoutLabel = document.getElementById('guidedWorkoutLabel');
+      if (workoutLabel) workoutLabel.textContent = workout ? `Treino ${workout.id} concluído` : 'Treino concluído';
+      document.getElementById('guidedSegmentTrack').innerHTML = guidedState.exercises.map((ex, i) => `<span class="guided-segment done" title="Exercício ${i + 1}"></span>`).join('');
+      const guidedBody = document.getElementById('guidedBody');
+      guidedBody.innerHTML = `
         <div class="guided-complete-banner">
           <div class="big-emoji">🎉</div>
           <h2>Treino guiado concluído!</h2>
           <p>Bom trabalho. Confira seu progresso na aba Progresso.</p>
-          <button class="btn-action primary" onclick="exitGuided()">Fechar</button>
+          <button class="btn-action primary js-exit-guided" type="button">Fechar</button>
         </div>
       `;
+      guidedBody.querySelector('.js-exit-guided').addEventListener('click', exitGuided);
+      requestAnimationFrame(() => guidedBody.querySelector('.js-exit-guided')?.focus());
     }
 
     // ===================== BACKUP / RESTORE (JSON) =====================
@@ -2454,6 +2806,11 @@
 
     function importBackupJSON(file) {
       if (!file) return;
+      if (file.size > 2 * 1024 * 1024) {
+        showToast('Backup muito grande. O limite é 2 MB.');
+        document.getElementById('importFileInput').value = '';
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
@@ -2567,24 +2924,48 @@
 
     // ===================== AI COACH =====================
     const AI_STORE_KEY = 'marsb_ai_settings';
+    const AI_KEY_SESSION_KEY = 'marsb_ai_api_key_session';
     let aiBusy = false;
     let aiHistory = []; // {role, content} for multi-turn (not including system)
 
     function loadAiSettings() {
       try {
         const s = JSON.parse(localStorage.getItem(AI_STORE_KEY) || '{}') || {};
-        // Defaults: free Puter mode
+        let sessionKey = '';
+        try { sessionKey = sessionStorage.getItem(AI_KEY_SESSION_KEY) || ''; } catch (e) {}
+        // Migra uma chave antiga para a sessão e não a mantém no localStorage.
+        if (!sessionKey && s.apiKey) sessionKey = String(s.apiKey);
+        if (s.apiKey) {
+          delete s.apiKey;
+          localStorage.setItem(AI_STORE_KEY, JSON.stringify(s));
+        }
         if (!s.mode) s.mode = 'free';
         if (!s.freeModel) s.freeModel = 'openrouter:auto';
+        s.apiKey = sessionKey;
         return s;
       } catch (e) {
-        return { mode: 'free', freeModel: 'openrouter:auto' };
+        return { mode: 'free', freeModel: 'openrouter:auto', apiKey: '' };
       }
     }
 
     function saveAiSettingsObj(obj) {
-      localStorage.setItem(AI_STORE_KEY, JSON.stringify(obj));
+      const safeSettings = Object.assign({}, obj);
+      const apiKey = String(safeSettings.apiKey || '');
+      delete safeSettings.apiKey;
+      try { localStorage.setItem(AI_STORE_KEY, JSON.stringify(safeSettings)); } catch (e) {}
+      try {
+        if (apiKey) sessionStorage.setItem(AI_KEY_SESSION_KEY, apiKey);
+        else sessionStorage.removeItem(AI_KEY_SESSION_KEY);
+      } catch (e) {}
       updateAiStatus();
+    }
+
+    function normalizeAiBaseUrl(raw) {
+      let parsed;
+      try { parsed = new URL(String(raw || '').trim()); } catch (e) { throw new Error('Base URL inválida'); }
+      const local = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1' || parsed.hostname === '[::1]';
+      if (parsed.protocol !== 'https:' && !local) throw new Error('Use uma Base URL HTTPS');
+      return parsed.toString().replace(/\/+$/, '');
     }
 
     function updateAiStatus() {
@@ -2643,11 +3024,12 @@
         showToast('Coach: IA grátis ativada');
         return;
       }
-      const baseUrl = (document.getElementById('aiBaseUrl').value || '').trim().replace(/\/+$/, '');
+      let baseUrl;
+      try { baseUrl = normalizeAiBaseUrl(document.getElementById('aiBaseUrl').value); }
+      catch (err) { showToast(err.message); return; }
       const apiKey = (document.getElementById('aiApiKey').value || '').trim();
-      const model = (document.getElementById('aiModel').value || '').trim() || 'grok-3';
-      if (!baseUrl) { showToast('Informe a Base URL'); return; }
-      if (!apiKey) { showToast('Informe a API Key'); return; }
+      const model = ((document.getElementById('aiModel').value || '').trim() || 'grok-3').slice(0, 120);
+      if (!apiKey || apiKey.length > 500) { showToast('Informe uma API Key válida'); return; }
       saveAiSettingsObj({ mode: 'custom', baseUrl, apiKey, model, freeModel: loadAiSettings().freeModel });
       closeAiSettings();
       showToast('Coach: API própria salva');
@@ -2704,14 +3086,18 @@
           ...history
         ]
       };
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
       const resp = await fetch(url, {
         method: 'POST',
+        signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + settings.apiKey
         },
         body: JSON.stringify(body)
       });
+      clearTimeout(timeoutId);
       const data = await resp.json().catch(() => ({}));
       if (!resp.ok) {
         const msg = (data && (data.error && data.error.message || data.message)) || ('Erro HTTP ' + resp.status);
@@ -2838,7 +3224,7 @@
     async function sendAiMessage(presetText) {
       if (aiBusy) return;
       const input = document.getElementById('aiInput');
-      const text = (presetText || (input && input.value) || '').trim();
+      const text = (presetText || (input && input.value) || '').trim().slice(0, 2000);
       if (!text) return;
 
       const settings = loadAiSettings();
@@ -2943,8 +3329,12 @@
       const dateEl = document.getElementById('bwDate');
       const kg = parseFloat(input && input.value);
       let date = (dateEl && dateEl.value) || todayKey();
-      if (!kg || kg < 30 || kg > 300) {
+      if (!kg || !Number.isFinite(kg) || kg < 30 || kg > 300) {
         showToast('Informe um peso válido (30–300 kg)');
+        return;
+      }
+      if (!isValidDateKey(date) || date > todayKey()) {
+        showToast('Informe uma data válida, até hoje');
         return;
       }
       // one entry per day — update if exists
@@ -3121,15 +3511,22 @@
         const cat = bmiCategory(bmi);
         document.getElementById('bwBmiVal').textContent = bmi.toFixed(1);
         document.getElementById('bwBmiVal').style.color = cat.color;
-        let goalTxt = '';
         const goal = parseFloat(gEl?.value) || (state.bodyMeta && state.bodyMeta.goalKg);
+        const diff = goal ? Math.round((latest.kg - goal) * 100) / 100 : 0;
+        const bmiInfo = document.getElementById('bwBmiInfo');
+        bmiInfo.textContent = '';
+        const bmiLabel = document.createElement('strong');
+        bmiLabel.style.color = cat.color;
+        bmiLabel.textContent = cat.label;
+        bmiInfo.appendChild(bmiLabel);
+        bmiInfo.appendChild(document.createElement('br'));
+        bmiInfo.appendChild(document.createTextNode('IMC com ' + latest.kg + ' kg e ' + height + ' cm'));
         if (goal) {
-          const diff = Math.round((latest.kg - goal) * 100) / 100;
-          goalTxt = '<br>Meta: <strong>' + goal + ' kg</strong> (' + (diff > 0 ? '+' : '') + diff + ' kg)';
+          bmiInfo.appendChild(document.createElement('br'));
+          const goalStrong = document.createElement('strong');
+          goalStrong.textContent = 'Meta: ' + goal + ' kg (' + (diff > 0 ? '+' : '') + diff + ' kg)';
+          bmiInfo.appendChild(goalStrong);
         }
-        document.getElementById('bwBmiInfo').innerHTML =
-          '<strong style="color:' + cat.color + '">' + cat.label + '</strong><br>' +
-          'IMC com ' + latest.kg + ' kg e ' + height + ' cm' + goalTxt;
         bmiBox.style.display = 'flex';
       } else if (bmiBox) {
         bmiBox.style.display = 'none';
@@ -3157,20 +3554,39 @@
         return;
       }
       const rev = sorted.slice().reverse();
-      list.innerHTML = rev.map((e, i) => {
+      list.innerHTML = '';
+      rev.forEach((e, i) => {
         // delta vs older entry (next in rev = previous chronologically)
         const older = rev[i + 1];
-        let deltaHtml = '<span class="bw-delta same">—</span>';
+        const item = document.createElement('div');
+        item.className = 'bw-history-item';
+        const details = document.createElement('div');
+        const kg = document.createElement('div');
+        kg.className = 'bw-kg';
+        kg.textContent = e.kg + ' kg';
+        const date = document.createElement('div');
+        date.className = 'bw-date';
+        date.textContent = formatDate(e.date);
+        details.append(kg, date);
+        const actions = document.createElement('div');
+        actions.style.cssText = 'display:flex;align-items:center;gap:10px;';
+        const delta = document.createElement('span');
+        delta.className = 'bw-delta same';
+        delta.textContent = '—';
         if (older) {
           const d = Math.round((e.kg - older.kg) * 100) / 100;
-          const cls = d > 0 ? 'up' : d < 0 ? 'down' : 'same';
-          deltaHtml = '<span class="bw-delta ' + cls + '">' + (d > 0 ? '+' : '') + d + ' kg</span>';
+          delta.className = 'bw-delta ' + (d > 0 ? 'up' : d < 0 ? 'down' : 'same');
+          delta.textContent = (d > 0 ? '+' : '') + d + ' kg';
         }
-        return '<div class="bw-history-item">' +
-          '<div><div class="bw-kg">' + e.kg + ' kg</div><div class="bw-date">' + formatDate(e.date) + '</div></div>' +
-          '<div style="display:flex;align-items:center;gap:10px;">' + deltaHtml +
-          '<button class="hi-del" onclick="deleteBodyWeightEntry(\'' + e.date + '\')">Apagar</button></div></div>';
-      }).join('');
+        const remove = document.createElement('button');
+        remove.className = 'hi-del';
+        remove.type = 'button';
+        remove.textContent = 'Apagar';
+        remove.addEventListener('click', () => deleteBodyWeightEntry(e.date));
+        actions.append(delta, remove);
+        item.append(details, actions);
+        list.appendChild(item);
+      });
     }
 
     function initBodyWeightFields() {
@@ -3178,7 +3594,8 @@
       if (dateEl && !dateEl.value) dateEl.value = todayKey();
       const hEl = document.getElementById('bwHeight');
       const gEl = document.getElementById('bwGoal');
-      if (hEl) {
+      if (hEl && hEl.dataset.bound !== '1') {
+        hEl.dataset.bound = '1';
         hEl.addEventListener('change', () => {
           hEl.dataset.touched = '1';
           const h = parseFloat(hEl.value);
@@ -3188,7 +3605,8 @@
           renderBodyWeight();
         });
       }
-      if (gEl) {
+      if (gEl && gEl.dataset.bound !== '1') {
+        gEl.dataset.bound = '1';
         gEl.addEventListener('change', () => {
           gEl.dataset.touched = '1';
           const g = parseFloat(gEl.value);
@@ -3208,7 +3626,8 @@
     // ===================== CALCULATORS =====================
     function bindSeg(containerId, attr) {
       const el = document.getElementById(containerId);
-      if (!el) return;
+      if (!el || el.dataset.bound === '1') return;
+      el.dataset.bound = '1';
       el.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', () => {
           el.querySelectorAll('button').forEach(b => b.classList.remove('active'));
@@ -3537,17 +3956,20 @@
       }
       var html = '';
       exercises.forEach(function (ex, idx) {
-        html += '<div class="menu-item" style="border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;background:var(--bg);">' +
-          '<div style="flex:1;">' +
-            '<div class="menu-item-name">' + (idx + 1) + '. ' + ex.nome + '</div>' +
-            '<div class="menu-item-sub">' + ex.series + ' séries · ' + ex.reps + ' reps · ' + ex.descanso + 's' +
-            (ex.tech ? ' · ' + ex.tech : '') + '</div>' +
+        var item = document.createElement('div');
+        item.className = 'menu-item';
+        item.style.cssText = 'border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;background:var(--bg);';
+        item.innerHTML = '<div style="flex:1;">' +
+            '<div class="menu-item-name"></div>' +
+            '<div class="menu-item-sub"></div>' +
           '</div>' +
-          '<button type="button" class="btn-action danger" style="padding:6px 10px;min-width:auto;font-size:0.75rem;" ' +
-            'onclick="planoRemoveExercise(' + idx + ')">Remover</button>' +
-        '</div>';
+          '<button type="button" class="btn-action danger js-remove-ex" style="padding:6px 10px;min-width:auto;font-size:0.75rem;">Remover</button>';
+        
+        item.querySelector('.menu-item-name').textContent = (idx + 1) + '. ' + ex.nome;
+        item.querySelector('.menu-item-sub').textContent = ex.series + ' séries · ' + ex.reps + ' reps · ' + ex.descanso + 's' + (ex.tech ? ' · ' + ex.tech : '');
+        item.querySelector('.js-remove-ex').addEventListener('click', function() { planoRemoveExercise(idx); });
+        list.appendChild(item);
       });
-      list.innerHTML = html;
     }
 
     function planoAddExercise() {
@@ -3715,6 +4137,11 @@
     function planoOnFileChosen(ev) {
       var file = ev.target.files && ev.target.files[0];
       if (!file) return;
+      if (file.size > 1024 * 1024) {
+        showToast('Arquivo muito grande. O limite é 1 MB.');
+        ev.target.value = '';
+        return;
+      }
       var reader = new FileReader();
       reader.onload = function (e) {
         var raw = e.target.result;
@@ -4738,12 +5165,25 @@
       document.getElementById('installBanner')?.classList.remove('show');
     }
 
-    let lastTouch = 0;
-    document.addEventListener('touchend', (e) => {
-      const now = Date.now();
-      if (now - lastTouch <= 300) e.preventDefault();
-      lastTouch = now;
-    }, { passive: false });
+    function updateNetworkStatus() {
+      const banner = document.getElementById('networkBanner');
+      if (!banner) return;
+      const offline = !navigator.onLine;
+      banner.textContent = offline
+        ? 'Modo offline: treinos, histórico e calculadoras continuam disponíveis; o Coach IA precisa de conexão.'
+        : '';
+      banner.classList.toggle('show', offline);
+    }
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+    updateNetworkStatus();
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && guidedState.active) {
+        event.preventDefault();
+        exitGuided();
+      }
+    });
 
     // ===================== OFFLINE (SERVICE WORKER) =====================
     if ('serviceWorker' in navigator) {

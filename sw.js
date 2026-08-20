@@ -1,4 +1,4 @@
-const CACHE_NAME = 'marsb-gym-v20';
+const CACHE_NAME = 'marsb-gym-v28';
 const APP_SHELL = [
   './',
   './index.html',
@@ -7,66 +7,71 @@ const APP_SHELL = [
   './icon-512.png'
 ];
 
-// Install: cache the app shell
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(APP_SHELL))
+      .catch(() => undefined)
   );
   self.skipWaiting();
 });
 
-// Activate: clean up any old caches from previous versions
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
-      )
-    )
+    Promise.all([
+      caches.keys().then((keys) => Promise.all(
+        keys
+          .filter((key) => key.startsWith('marsb-gym-') && key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
+      )),
+      self.registration.navigationPreload
+        ? self.registration.navigationPreload.enable().catch(() => undefined)
+        : Promise.resolve()
+    ])
   );
   self.clients.claim();
 });
 
-// Fetch strategy:
-// - Navigation requests (loading the app / index.html) and manifest.json: NETWORK-FIRST.
-//   Always try to get the freshest version when online; fall back to cache only when offline.
-//   This is what makes the app show updates immediately instead of lagging one visit behind.
-// - Everything else (icons, other static assets): CACHE-FIRST, since they rarely change,
-//   updating the cache silently in the background for next time.
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+async function networkFirst(request, fallbackUrl) {
+  try {
+    const response = await fetch(request);
+    if (response && response.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put(request, response.clone());
+    }
+    return response;
+  } catch (e) {
+    const cached = await caches.match(request);
+    return cached || caches.match(fallbackUrl);
+  }
+}
+
+async function staleWhileRevalidate(request) {
+  const cached = await caches.match(request);
+  const network = fetch(request).then(async (response) => {
+    if (response && response.ok && new URL(request.url).origin === self.location.origin) {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put(request, response.clone());
+    }
+    return response;
+  }).catch(() => cached);
+  return cached || network;
+}
+
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const isNavigation = event.request.mode === 'navigate';
-  const isManifest = event.request.url.endsWith('manifest.json');
+  const isManifest = new URL(event.request.url).pathname.endsWith('/manifest.json');
 
   if (isNavigation || isManifest) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => caches.match(event.request).then((cached) => cached || caches.match('./index.html')))
-    );
+    event.respondWith(networkFirst(event.request, './index.html'));
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const networkFetch = fetch(event.request)
-        .then((response) => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => cached);
-
-      return cached || networkFetch;
-    })
-  );
+  event.respondWith(staleWhileRevalidate(event.request));
 });
